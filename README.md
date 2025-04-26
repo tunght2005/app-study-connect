@@ -25,5 +25,3 @@ git clone git@github.com:newbie1710/student-connect-app.git
 * "@babel/preset-env": "^7.22.10"
 * "babel-plugin-module-resolver": "^5.0.0"
 ---
-
-Nếu bạn muốn mình tạo luôn file `README.md` để bạn copy dán về dùng ngay thì mình sẽ gửi định dạng code tiếp nhé. Bạn muốn thêm gì không?
