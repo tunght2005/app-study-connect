@@ -1,16 +1,18 @@
-/**
- * Updated by trungquandev.com's author on August 17 2023
- * YouTube: https://youtube.com/@trungquandev
- * "A bit of fragrance clings to the hand that gives flowers!"
- */
-
 import express from 'express'
 import { mapOrder } from '~/utils/sorts.js'
+import connectDB from '~/configs/mongodb.js' // thêm dòng này
+import authRoutes from './routes/v1/authRoutes.js'
+
 
 const app = express()
+app.use(express.json())
+
 
 const hostname = 'localhost'
 const port = 8017
+
+// Kết nối Database trước
+connectDB()
 
 app.get('/', (req, res) => {
   // Test Absolute import mapOrder
@@ -27,7 +29,10 @@ app.get('/', (req, res) => {
   res.end('<h1>Hello World!</h1><hr>')
 })
 
+app.use('/api/auth', authRoutes)
+
+
 app.listen(port, hostname, () => {
   // eslint-disable-next-line no-console
-  console.log(`Hello Phát Tài Dev, I am running at http://${ hostname }:${ port }/`)
+  console.log(`Hello Phát Tài Dev, I am running at http://${hostname}:${port}/`)
 })
