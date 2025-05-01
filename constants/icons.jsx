@@ -8,13 +8,15 @@ import search from "../assets/icons/search.png";
 import upload from "../assets/icons/upload.png";
 import rightArrow from "../assets/icons/right-arrow.png";
 import logout from "../assets/icons/logout.png";
-import eyeHide from "../assets/icons/eye-hide.png";
-import eye from "../assets/icons/eye.png";
+import eyeHide from "../assets/icons/eye-closed.svg";
+import eye from "../assets/icons/eye-open.svg";
 import play from "../assets/icons/play.png";
 import qa from "../assets/icons/barcode-qr.svg"
 import groups from "../assets/icons/users.svg"
 import calendar from "../assets/icons/calendar-days.svg";
 import chat from "../assets/icons/msgs.svg";
+import emailIcon from "../assets/icons/envelope.svg"
+import pwIcon from "../assets/icons/lock.svg"
 
 export default {
   play,
@@ -34,4 +36,6 @@ export default {
   groups,
   calendar,
   chat,
+  emailIcon,
+  pwIcon,
 };
