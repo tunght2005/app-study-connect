@@ -4,7 +4,7 @@ import plus from "../assets/icons/plus.png";
 import profile from "../assets/icons/profile.svg";
 import leftArrow from "../assets/icons/left-arrow.png";
 import menu from "../assets/icons/menu.png";
-import search from "../assets/icons/search.png";
+import search from "../assets/icons/search.svg";
 import upload from "../assets/icons/upload.png";
 import rightArrow from "../assets/icons/right-arrow.png";
 import logout from "../assets/icons/logout.png";
@@ -17,6 +17,7 @@ import calendar from "../assets/icons/calendar-days.svg";
 import chat from "../assets/icons/msgs.svg";
 import emailIcon from "../assets/icons/envelope.svg"
 import pwIcon from "../assets/icons/lock.svg"
+import friend from "../assets/icons/grid-circle-plus.svg"
 
 export default {
   play,
@@ -38,4 +39,5 @@ export default {
   chat,
   emailIcon,
   pwIcon,
+  friend,
 };

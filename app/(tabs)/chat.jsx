@@ -1,4 +1,3 @@
-// full code with image and file display in chat
 import React, { useState } from 'react';
 import {
   View,
@@ -10,6 +9,10 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import SearchInput from '../../components/SearchInput';
+import ButtonExtend from '../../components/ButtonExtend';
+import { icons } from '../../constants';
 
 const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
@@ -57,43 +60,33 @@ const ChatScreen = () => {
     }
   };
 
-  const pickFile = async () => {
-    const result = await DocumentPicker.getDocumentAsync({});
-    if (result.type === 'success') {
-      const now = new Date();
-      const time = `${now.getHours().toString().padStart(2, '0')}:${now
-        .getMinutes()
-        .toString()
-        .padStart(2, '0')}`;
-      const fileMsg = {
-        id: Date.now(),
-        user: 'Emily Davis',
-        avatar: 'https://storage.googleapis.com/a1aa/image/5f8435b9-10c5-4df1-d418-48aab78a9fc5.jpg',
-        time,
-        file: result.name,
-        right: true,
-      };
-      setMessages((prev) => [...prev, fileMsg]);
-    }
-  };
-
   const onlineUsers = [
     { id: 1, name: 'Alice', avatar: 'https://storage.googleapis.com/a1aa/image/d43a33a7-8e4a-4328-bc7e-4c145dc22eb6.jpg' },
     { id: 2, name: 'James', avatar: 'https://storage.googleapis.com/a1aa/image/6d689c86-5534-4923-d439-1c24c319a3c7.jpg' },
     { id: 3, name: 'Sophia', avatar: 'https://storage.googleapis.com/a1aa/image/965786fe-1586-40e3-2b4d-a49bdb7ea933.jpg' },
+    { id: 3, name: 'Sophia', avatar: 'https://storage.googleapis.com/a1aa/image/965786fe-1586-40e3-2b4d-a49bdb7ea933.jpg' },
+    { id: 3, name: 'Sophia', avatar: 'https://storage.googleapis.com/a1aa/image/965786fe-1586-40e3-2b4d-a49bdb7ea933.jpg' },
+    { id: 3, name: 'Sophia', avatar: 'https://storage.googleapis.com/a1aa/image/965786fe-1586-40e3-2b4d-a49bdb7ea933.jpg' },
+    { id: 3, name: 'Sophia', avatar: 'https://storage.googleapis.com/a1aa/image/965786fe-1586-40e3-2b4d-a49bdb7ea933.jpg' },
+    { id: 3, name: 'Sophia', avatar: 'https://storage.googleapis.com/a1aa/image/965786fe-1586-40e3-2b4d-a49bdb7ea933.jpg' },
+    { id: 3, name: 'Sophia', avatar: 'https://storage.googleapis.com/a1aa/image/965786fe-1586-40e3-2b4d-a49bdb7ea933.jpg' },
   ];
 
   return (
-    <View className="flex-1 bg-white max-w-sm mx-auto border border-gray-200 rounded-md">
+     <SafeAreaView className="bg-white h-full">
       {/* Header */}
-      <View className="flex-row justify-between items-center px-4 py-3 border-b border-gray-200">
-        <Text className="text-lg">←</Text>
-        <Text className="font-semibold text-base">Nhóm Chat</Text>
-        <Text className="text-gray-400">📊</Text>
+      <View className="flex-row justify-between items-center">
+        <Text className="font-semibold text-base flex-1 text-center ml-4">Chat</Text>
+        <ButtonExtend/>
+      </View>
+
+      {/* Search */}
+      <View className="relative">
+        <SearchInput/>
       </View>
 
       {/* Online Users */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-4 pb-2">
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="max-h-[60px] px-4 pb-2 mt-4 mb-4 border-b">
         {onlineUsers.map((user) => (
           <View key={user.id} className="items-center mr-4">
             <View className="relative">
@@ -119,13 +112,13 @@ const ChatScreen = () => {
               <View className="flex-row justify-between items-center w-full">
                 {msg.right ? (
                   <>
-                    <Text className="text-xs text-gray-500">{msg.time}</Text>
+                    <Text className="text-xs text-gray-500 mr-2">{msg.time}</Text>
                     <Text className="font-semibold text-sm text-gray-900">{msg.user}</Text>
                   </>
                 ) : (
                   <>
                     <Text className="font-semibold text-sm text-gray-900">{msg.user}</Text>
-                    <Text className="text-xs text-gray-500">{msg.time}</Text>
+                    <Text className="text-xs text-gray-500 mr-2">{msg.time}</Text>
                   </>
                 )}
               </View>
@@ -143,14 +136,14 @@ const ChatScreen = () => {
       {/* Message Input */}
       <View className="px-4 py-3 border-t border-gray-200">
         <View className="flex flex-col space-y-2">
-          <TouchableOpacity onPress={pickFile} className="flex-row justify-center items-center">
-            <Text className="text-indigo-600">☁️ Upload File</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={pickImage} className="flex-row justify-center items-center">
-            <Text className="text-indigo-600">🖼️ Upload Image</Text>
-          </TouchableOpacity>
           <View className="flex-row items-center border border-gray-300 rounded-md overflow-hidden">
-            <Text className="px-3 text-gray-400 text-lg">😊</Text>
+            <TouchableOpacity onPress={pickImage} className="flex-row justify-center items-center">
+              <Image
+                source={icons.upload}
+                className="max-w-[30px] max-h-[30px] ml-0.75 border-r px-2"
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
             <TextInput
               value={input}
               onChangeText={setInput}
@@ -164,7 +157,7 @@ const ChatScreen = () => {
           </View>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
