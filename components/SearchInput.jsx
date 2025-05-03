@@ -9,7 +9,7 @@ const SearchInput = ({ initialQuery }) => {
   const [query, setQuery] = useState(initialQuery || "");
 
   return (
-    <View className="flex flex-row items-center space-x-7  h-10 mx-auto bg-gray-100 rounded-2xl border-2 border-black mt-3">
+    <View className="flex flex-row items-center space-x-7  h-10 mx-auto bg-[#F3F4F6FF] rounded-2xl border-2 border-[#efefff] mt-3">
       <Image source={icons.search} className="max-w-[25px] ml-2" resizeMode="contain" />
       <TextInput
         className="text-base mt-0.5 text-black flex-1 font-pregular outline-none ml-0"

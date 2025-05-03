@@ -9,6 +9,9 @@ import {
   Modal,
   Pressable,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import ButtonExtend from '../../components/ButtonExtend';
+import { icons } from '../../constants';
 
 const defaultQuestions = [
   {
@@ -74,53 +77,60 @@ const QuestA = () => {
   };
 
   return (
-    <View className="flex-1 bg-white">
-      <ScrollView className="max-w-md mx-auto px-4 pt-5 space-y-4">
-        <View className="flex-row justify-between items-center border-b border-gray-200 pb-3">
-          <Text className="text-lg">←</Text>
-          <Text className="font-semibold text-base text-center flex-grow">Q&A Section</Text>
-          <Text className="text-gray-400">📊</Text>
+    <SafeAreaView className="bg-white h-full">
+      <View className="space-y-4 mx-3 mt-2">
+        <View className="flex-row justify-between items-center">
+          <Text className="font-semibold text-base flex-1 text-center ml-4">Q&A Section</Text>
+          <ButtonExtend/>
         </View>
-
-        {questions.map((q) => (
-          <View key={q.id} className="flex-row justify-between border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
-            <View className="w-[65%]">
-              <Text className="font-semibold text-sm mb-1">{q.title}</Text>
-              <Text className="text-xs text-gray-400 mb-1">{q.description}</Text>
-              <Text className="text-xs text-gray-400 mb-3">Responses: {q.responses}</Text>
-              <View className="flex-row space-x-3">
-                <TouchableOpacity className="border border-indigo-600 rounded px-3 py-1">
-                  <Text className="text-indigo-600 text-xs font-medium">{q.answerTrue}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity className="border border-indigo-600 rounded px-3 py-1">
-                  <Text className="text-indigo-600 text-xs font-medium">{q.answerFalse}</Text>
-                </TouchableOpacity>
+        <Text className="font-sm text-base text-center italic">Trả lời các câu hỏi dưới đây</Text>
+        <ScrollView className="space-y-3 max-h-[70vh]">
+          {questions.map((q) => (
+            <View key={q.id} className="flex-row justify-between border border-gray-200 rounded-lg p-4 bg-white shadow-sm mt-4">
+              <View className="w-[65%]">
+                <Text className="font-semibold text-sm mb-1">{q.title}</Text>
+                <Text className="text-xs text-gray-400 mb-1">{q.description}</Text>
+                <Text className="text-xs text-gray-400 mb-3">Responses: {q.responses}</Text>
+                <View className="flex-row space-x-3">
+                  <TouchableOpacity className="border border-indigo-600 rounded px-3 py-1">
+                    <Text className="text-indigo-600 text-xs font-medium">{q.answerTrue}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity className="border border-indigo-600 rounded px-3 py-1">
+                    <Text className="text-indigo-600 text-xs font-medium">{q.answerFalse}</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
+              <Image
+                source={{ uri: q.image }}
+                className="w-20 h-20 rounded-md"
+                resizeMode="cover"
+              />
             </View>
-            <Image
-              source={{ uri: q.image }}
-              className="w-20 h-20 rounded-md"
-              resizeMode="cover"
-            />
+          ))}
+
+          <View className="items-center my-6">
+            <TouchableOpacity
+              onPress={() => setModalVisible(true)}
+              className="bg-indigo-600 px-6 py-2 rounded-md flex-row items-center space-x-2"
+            >
+              <Text className="text-white font-semibold flex justify-center items-center">
+                <Image
+                source={icons.plus}
+                className="max-w-[15px] max-h-[15px] mr-2"
+                resizeMode="contain"
+              /> 
+                Ask a Question
+              </Text>
+            </TouchableOpacity>
           </View>
-        ))}
-
-        <View className="items-center my-6">
-          <TouchableOpacity
-            onPress={() => setModalVisible(true)}
-            className="bg-indigo-600 px-6 py-2 rounded-md flex-row items-center space-x-2"
-          >
-            <Text className="text-white font-semibold">➕ Ask a Question</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-
+        </ScrollView>
+      </View> 
       <Modal visible={modalVisible} transparent animationType="slide">
         <View className="flex-1 bg-black bg-opacity-40 justify-center items-center">
           <View className="bg-white w-11/12 max-h-[90%] rounded-lg p-6">
-            <Text className="text-lg font-semibold text-center mb-4">Add a New Question</Text>
+            <Text className="text-lg font-semibold text-center mb-4">Add New Question</Text>
             <ScrollView className="space-y-3">
-              {['image', 'title', 'description', 'answerTrue', 'answerFalse', 'responses'].map((key) => (
+              {['image', 'title', 'description', 'answerTrue', 'answerFalse'].map((key) => (
                 <View key={key}>
                   <Text className="text-xs font-semibold mb-1 capitalize">{key}</Text>
                   <TextInput
@@ -137,20 +147,20 @@ const QuestA = () => {
                   className="px-4 py-2 border border-gray-300 rounded"
                   onPress={() => setModalVisible(false)}
                 >
-                  <Text className="text-gray-700">Cancel</Text>
+                  <Text className="text-gray-700">Hủy</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   className="px-4 py-2 bg-indigo-600 rounded"
                   onPress={addQuestion}
                 >
-                  <Text className="text-white">Add Question</Text>
+                  <Text className="text-white">Thêm Câu Hỏi</Text>
                 </TouchableOpacity>
               </View>
             </ScrollView>
           </View>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 };
 

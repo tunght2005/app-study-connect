@@ -18,7 +18,7 @@ import chat from "../assets/icons/msgs.svg";
 import emailIcon from "../assets/icons/envelope.svg"
 import pwIcon from "../assets/icons/lock.svg"
 import friend from "../assets/icons/grid-circle-plus.svg"
-
+import pen from "../assets/icons/pen-writing-filled.svg"
 export default {
   play,
   bookmark,
@@ -40,4 +40,5 @@ export default {
   emailIcon,
   pwIcon,
   friend,
+  pen,
 };

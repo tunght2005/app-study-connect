@@ -75,7 +75,7 @@ const ChatScreen = () => {
   return (
      <SafeAreaView className="bg-white h-full">
       {/* Header */}
-      <View className="flex-row justify-between items-center">
+      <View className="flex-row justify-between items-center mx-3 mt-2">
         <Text className="font-semibold text-base flex-1 text-center ml-4">Chat</Text>
         <ButtonExtend/>
       </View>
@@ -147,12 +147,12 @@ const ChatScreen = () => {
             <TextInput
               value={input}
               onChangeText={setInput}
-              placeholder="Type a message"
+              placeholder="Tin nhắn"
               placeholderTextColor="#9CA3AF"
               className="flex-1 px-2 py-2 text-sm text-gray-700"
             />
             <TouchableOpacity onPress={handleSend} className="bg-indigo-500 px-4 py-2 rounded-r-md">
-              <Text className="text-white text-sm font-semibold">Send</Text>
+              <Text className="text-white text-sm font-semibold">Gửi</Text>
             </TouchableOpacity>
           </View>
         </View>
