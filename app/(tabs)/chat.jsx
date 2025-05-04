@@ -64,12 +64,6 @@ const ChatScreen = () => {
     { id: 1, name: 'Alice', avatar: 'https://storage.googleapis.com/a1aa/image/d43a33a7-8e4a-4328-bc7e-4c145dc22eb6.jpg' },
     { id: 2, name: 'James', avatar: 'https://storage.googleapis.com/a1aa/image/6d689c86-5534-4923-d439-1c24c319a3c7.jpg' },
     { id: 3, name: 'Sophia', avatar: 'https://storage.googleapis.com/a1aa/image/965786fe-1586-40e3-2b4d-a49bdb7ea933.jpg' },
-    { id: 3, name: 'Sophia', avatar: 'https://storage.googleapis.com/a1aa/image/965786fe-1586-40e3-2b4d-a49bdb7ea933.jpg' },
-    { id: 3, name: 'Sophia', avatar: 'https://storage.googleapis.com/a1aa/image/965786fe-1586-40e3-2b4d-a49bdb7ea933.jpg' },
-    { id: 3, name: 'Sophia', avatar: 'https://storage.googleapis.com/a1aa/image/965786fe-1586-40e3-2b4d-a49bdb7ea933.jpg' },
-    { id: 3, name: 'Sophia', avatar: 'https://storage.googleapis.com/a1aa/image/965786fe-1586-40e3-2b4d-a49bdb7ea933.jpg' },
-    { id: 3, name: 'Sophia', avatar: 'https://storage.googleapis.com/a1aa/image/965786fe-1586-40e3-2b4d-a49bdb7ea933.jpg' },
-    { id: 3, name: 'Sophia', avatar: 'https://storage.googleapis.com/a1aa/image/965786fe-1586-40e3-2b4d-a49bdb7ea933.jpg' },
   ];
 
   return (
