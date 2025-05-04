@@ -1,7 +1,9 @@
 import express from 'express'
 import { mapOrder } from '~/utils/sorts.js'
 import connectDB from '~/configs/mongodb.js' // thêm dòng này
-import authRoutes from './routes/v1/authRoutes.js'
+import authRoutes from '~/routes/v1/authRoutes.js'
+import dotenv from 'dotenv'
+dotenv.config()
 
 
 const app = express()

@@ -2,10 +2,7 @@ import mongoose from 'mongoose'
 
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/student-data', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    })
+    await mongoose.connect('mongodb://localhost:27017/student-data')
     // eslint-disable-next-line no-console
     console.log('Connected to MongoDB successfully!')
   } catch (error) {
