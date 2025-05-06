@@ -22,5 +22,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-/src/configs/mongodb.js
+src/configs/mongodb.js
+
 .env
