@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,19 +6,19 @@ import {
   TouchableOpacity,
   Switch,
   Image,
-  ScrollView,
+  Alert,
 } from 'react-native';
 import { icons } from '../../constants';
 import ButtonExtend from '../../components/ButtonExtend';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, router } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect } from 'react';
-import { Alert } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 const Profile = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [avatar, setAvatar] = useState('https://storage.googleapis.com/a1aa/image/fd246e16-3759-479b-e456-89525bfd2a09.jpg');
   const [emailNotify, setEmailNotify] = useState(true);
   const [appNotify, setAppNotify] = useState(false);
   // Fetch thông tin user khi mở profile
@@ -37,6 +37,7 @@ const Profile = () => {
 
         setName(data.username || '');
         setEmail(data.email || '');
+        if (data.avatar) setAvatar(data.avatar);
       } catch (err) {
         Alert.alert('Lỗi', err.message);
       }
@@ -44,6 +45,23 @@ const Profile = () => {
 
     fetchProfile();
   }, []);
+  
+  const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert('Lỗi', 'Bạn cần cho phép truy cập thư viện để chọn ảnh.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setAvatar(result.assets[0].uri);
+    }
+  };
   return (
     <SafeAreaView className="bg-white h-full">
       <View className="space-y-4 mx-3 mt-2">
@@ -55,10 +73,12 @@ const Profile = () => {
 
         {/* Profile Section */}
         <View className="flex-row items-center gap-4 px-4 py-6">
-          <Image
-            source={{ uri: 'https://storage.googleapis.com/a1aa/image/fd246e16-3759-479b-e456-89525bfd2a09.jpg' }}
-            className="w-12 h-12 rounded-full"
-          />
+        <TouchableOpacity onPress={pickImage}>
+            <Image
+              source={{ uri: avatar }}
+              className="w-16 h-16 rounded-full border-2 border-gray-300"
+            />
+          </TouchableOpacity>
           <View className="flex-1">
             <Text className="font-semibold text-base text-black">{name}</Text>
             <Text className="text-sm text-gray-500">{email}</Text>
@@ -100,6 +120,7 @@ const Profile = () => {
                     body: JSON.stringify({
                       username: name,
                       email: email,
+                      avatar: avatar, // gửi avatar nếu backend hỗ trợ
                     }),
                   });
 

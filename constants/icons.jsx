@@ -19,6 +19,8 @@ import emailIcon from "../assets/icons/email.png"
 import pwIcon from "../assets/icons/unlock.png"
 import friend from "../assets/icons/menu.png"
 import pen from "../assets/icons/pencil.png"
+import del from "../assets/icons/delete.png"
+
 export default {
   play,
   bookmark,
@@ -41,4 +43,5 @@ export default {
   pwIcon,
   friend,
   pen,
+  del,
 };
