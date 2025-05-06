@@ -59,9 +59,32 @@ router.get('/me', auth, async (req, res) => {
   }
 })
 
+// // Cập nhật profile
+// router.put('/me', auth, async (req, res) => {
+//   const { username, email } = req.body
+//   try {
+//     const user = await User.findById(req.userId)
+//     if (!user) return res.status(404).json({ message: 'Không tìm thấy người dùng' })
+
+//     if (email !== user.email) {
+//       const emailExists = await User.findOne({ email })
+//       if (emailExists) return res.status(400).json({ message: 'Email đã được sử dụng' })
+//     }
+
+//     user.username = username
+//     user.email = email
+//     await user.save()
+
+//     res.json({ message: 'Cập nhật thành công', user: { username, email } })
+//   } catch (err) {
+//     res.status(500).json({ message: 'Lỗi server', error: err.message })
+//   }
+// })
+
 // Cập nhật profile
 router.put('/me', auth, async (req, res) => {
-  const { username, email } = req.body
+  const { username, email, avatar } = req.body // ✅ Thêm avatar vào destructuring
+
   try {
     const user = await User.findById(req.userId)
     if (!user) return res.status(404).json({ message: 'Không tìm thấy người dùng' })
@@ -71,15 +94,26 @@ router.put('/me', auth, async (req, res) => {
       if (emailExists) return res.status(400).json({ message: 'Email đã được sử dụng' })
     }
 
+    // ✅ Gán lại các giá trị
     user.username = username
     user.email = email
+    if (avatar) user.avatar = avatar // ✅ Cập nhật avatar nếu có
+
     await user.save()
 
-    res.json({ message: 'Cập nhật thành công', user: { username, email } })
+    res.json({
+      message: 'Cập nhật thành công',
+      user: {
+        username: user.username,
+        email: user.email,
+        avatar: user.avatar // ✅ Gửi lại avatar về frontend
+      }
+    })
   } catch (err) {
     res.status(500).json({ message: 'Lỗi server', error: err.message })
   }
 })
+
 router.get('/profile', auth, authController.profile)
 router.post('/logout', authController.logout)
 
