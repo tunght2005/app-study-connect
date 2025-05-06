@@ -35,7 +35,6 @@ const groups = [
 const GroupsApp = () => {
   return (
     <SafeAreaView className="bg-white h-full">
-      <ScrollView className="space-y-4 mx-3 mt-2">
         {/* Header */}
         <View className="flex-row justify-between items-center">
           <Text className="font-semibold text-base flex-1 text-center ml-4">Danh Sách Nhóm</Text>
@@ -43,13 +42,13 @@ const GroupsApp = () => {
         </View>
 
         {/* Search */}
-        <View className="relative">
+        <View className="relative mx-3">
           <SearchInput/>
         </View>
 
         {/* Title */}
-        <Text className="font-semibold text-base text-black mt-4 mb-3">Study Groups</Text>
-
+        <Text className="font-semibold text-base text-black mt-4 mb-3 mx-3">Study Groups</Text>
+      <ScrollView className="space-y-4 mx-3 mt-2">
         {/* Group list */}
         {groups.map((group) => (
           <View

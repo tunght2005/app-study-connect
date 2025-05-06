@@ -75,7 +75,7 @@ const ChatScreen = () => {
       </View>
 
       {/* Search */}
-      <View className="relative">
+      <View className="relative mx-3">
         <SearchInput/>
       </View>
 

@@ -9,11 +9,11 @@ export default function App() {
   return (
     <SafeAreaView className="flex-1 items-center justity-center bg-gray-200 h-full">
       <ScrollView contentContainerStyle={{ height: '100%'}}>
-        <View className="text-4xl text-white font-pbold py-10 flex justify-center items-center" >
-          <Image className="w-24 h-24 m-auto mb-10 mt-20"
-            source={require('../assets/images/logo_app.svg')}  
+        <View className=" flex justify-center items-center" >
+          <Image className="w-24 h-24 mx-auto mt-[200px]"
+            source={require('../assets/images/logo_app.png')}  
           />
-          StudyConnect
+          <Text className="text-5xl text-white font-pbold py-10">StudyConnect</Text>
           <Text className="text-base text-white text-center mr-[30] ml-[30]">
             Bắt đầu kết nốt tăng cường kĩ năng học tập của bạn đến với mọi người!
           </Text>

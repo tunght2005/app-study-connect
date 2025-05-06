@@ -38,13 +38,13 @@ const ButtonExtend = () => {
   return (
     <>
       <TouchableOpacity onPress={() => setModalVisible(true)}>
-        <Image source={icons.friend} className="max-w-[25px] ml-2" resizeMode="contain" />
+        <Image source={icons.friend} className="w-6 h-6 ml-2" resizeMode="contain" />
       </TouchableOpacity>
 
       <Modal visible={modalVisible} transparent>
-        <View className="flex-1 bg-black bg-opacity-40 justify-center items-center">
-          <View className="bg-white rounded-xl w-11/12 max-h-[90%] p-6">
-            <Text className="text-lg font-semibold mb-4 text-center">Friends Management</Text>
+        <View className="flex-1 justify-center items-center">
+          <View className="bg-white rounded-xl w-11/12 max-h-[90%] p-6 border-2 border-blue-500 shadow-sm">
+            <Text className="text-lg font-semibold mb-4 text-center">Quản Lý Bạn Bè</Text>
 
             <View className="flex-row items-center mb-4">
               <TextInput
@@ -57,14 +57,14 @@ const ButtonExtend = () => {
                 className="ml-2 bg-indigo-600 px-4 py-2 rounded-md"
                 onPress={sendInvite}
               >
-                <Text className="text-white text-sm font-semibold">Send</Text>
+                <Text className="text-white text-sm font-semibold">Gửi</Text>
               </TouchableOpacity>
             </View>
 
-            <Text className="font-semibold text-sm mb-2">Friends List</Text>
+            <Text className="font-semibold text-sm mb-2">Danh Sách Bạn Bè</Text>
             <View className="mb-4 space-y-2">
               {friends.length === 0 ? (
-                <Text className="text-xs text-gray-500 italic">No friends added.</Text>
+                <Text className="text-xs text-gray-500 italic">Không có bạn bè được thêm vào.</Text>
               ) : (
                 friends.map(friend => (
                   <View key={friend.id} className="flex-row justify-between items-center">
@@ -77,7 +77,7 @@ const ButtonExtend = () => {
                         <Text className={`text-xs px-2 py-1 rounded ${friend.online ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-700'}`}>{friend.online ? 'Online' : 'Offline'}</Text>
                       </TouchableOpacity>
                       <TouchableOpacity onPress={() => removeFriend(friend.id)}>
-                        <Text className="text-red-500 text-xs font-semibold">Remove</Text>
+                        <Text className="text-red-500 text-xs font-semibold">Xóa</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -85,10 +85,10 @@ const ButtonExtend = () => {
               )}
             </View>
 
-            <Text className="font-semibold text-sm mb-2">Friend Invitations</Text>
+            <Text className="font-semibold text-sm mb-2">Lời Mời Bạn Bè</Text>
             <View className="space-y-2">
               {invitations.length === 0 ? (
-                <Text className="text-xs text-gray-500 italic">No friend invitations.</Text>
+                <Text className="text-xs text-gray-500 italic">Không có lời mời bạn bè.</Text>
               ) : (
                 invitations.map(inv => (
                   <View key={inv.id} className="flex-row justify-between items-center">

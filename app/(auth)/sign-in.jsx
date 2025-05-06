@@ -57,7 +57,7 @@ const submit = async () => {
           }}
         >
           <View className="text-3xl font-semibold text-black mt-[-40] font-psemibold justify-center items-center">
-            <Text>StudyConnect</Text> 
+            <Text className="text-3xl font-pbold ">StudyConnect</Text> 
             <Text className="text-sm mt-3 mb-10">
                 Nhập thông tin vào để đăng nhập
             </Text>

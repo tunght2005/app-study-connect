@@ -5,7 +5,7 @@ import { icons } from "../../constants";
 
 const TabIcon = ({ icon, color, name, focused }) => {
     return (
-      <View className="flex items-center justify-center gap-2">
+      <View className="flex items-center justify-center gap-1 mt-8">
         <Image
           source={icon}
           resizeMode="contain"
@@ -47,7 +47,7 @@ const TabsLayout = () => {
               <TabIcon
                 icon={icons.groups}
                 color={color}
-                name="Groups"
+                name=""
                 focused={focused}
               />
             ),
@@ -62,7 +62,7 @@ const TabsLayout = () => {
               <TabIcon
                 icon={icons.chat}
                 color={color}
-                name="Chat"
+                name=""
                 focused={focused}
               />
             ),
@@ -77,7 +77,7 @@ const TabsLayout = () => {
               <TabIcon
                 icon={icons.qa}
                 color={color}
-                name="Q&A"
+                name=""
                 focused={focused}
               />
             ),
@@ -92,7 +92,7 @@ const TabsLayout = () => {
               <TabIcon
                 icon={icons.calendar}
                 color={color}
-                name="Calendar"
+                name=""
                 focused={focused}
               />
             ),
@@ -107,7 +107,7 @@ const TabsLayout = () => {
               <TabIcon
                 icon={icons.profile}
                 color={color}
-                name="Settings"
+                name=""
                 focused={focused}
               />
             ),

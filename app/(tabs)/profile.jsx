@@ -86,28 +86,8 @@ const Profile = () => {
               onChangeText={setEmail}
             />
           </View>
-
-          {/* Toggles */}
-          <View className="flex-row justify-between items-center">
-            <Text className="text-black text-sm">Email thông báo <Text className="text-red-500 italic">(đang phát triển)</Text></Text>
-            <Switch
-              value={emailNotify}
-              onValueChange={setEmailNotify}
-              trackColor={{ true: '#4f46e5', false: '#d1d5db' }}
-              thumbColor={'white'}
-            />
-          </View>
-          <View className="flex-row justify-between items-center">
-            <Text className="text-black text-sm">Thông báo APP <Text className="text-red-500 italic">(đang phát triển)</Text></Text>
-            <Switch
-              value={appNotify}
-              onValueChange={setAppNotify}
-              trackColor={{ true: '#4f46e5', false: '#d1d5db' }}
-              thumbColor={'white'}
-            />
-          </View>
-          {/* Lưu thông tin */}
-          <TouchableOpacity
+           {/* Lưu thông tin */}
+           <TouchableOpacity
               onPress={async () => {
                 try {
                   const token = await AsyncStorage.getItem('token');
@@ -131,11 +111,29 @@ const Profile = () => {
                   Alert.alert('Lỗi', err.message);
                 }
               }}
-              className="mt-4 bg-blue-600 py-3 rounded-md"
+              className="mt-4 bg-blue-600 py-3 rounded-md w-[130px]"
             >
-              <Text className="text-white text-center font-semibold text-base">Lưu Thông Tin</Text>
+              <Text className="text-white text-center font-semibold text-base ">Lưu Thông Tin</Text>
           </TouchableOpacity>
-
+          {/* Toggles */}
+          <View className="flex-row justify-between items-center">
+            <Text className="text-black text-sm">Email thông báo <Text className="text-red-500 italic">(đang phát triển)</Text></Text>
+            <Switch
+              value={emailNotify}
+              onValueChange={setEmailNotify}
+              trackColor={{ true: '#4f46e5', false: '#d1d5db' }}
+              thumbColor={'white'}
+            />
+          </View>
+          <View className="flex-row justify-between items-center">
+            <Text className="text-black text-sm">Thông báo APP <Text className="text-red-500 italic">(đang phát triển)</Text></Text>
+            <Switch
+              value={appNotify}
+              onValueChange={setAppNotify}
+              trackColor={{ true: '#4f46e5', false: '#d1d5db' }}
+              thumbColor={'white'}
+            />
+          </View>
           {/* Logout */}
           <TouchableOpacity
               onPress={async () => {

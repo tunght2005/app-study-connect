@@ -1,24 +1,24 @@
 import bookmark from "../assets/icons/bookmark.png";
 import home from "../assets/icons/home.png";
 import plus from "../assets/icons/plus.png";
-import profile from "../assets/icons/profile.svg";
+import profile from "../assets/icons/profile.png";
 import leftArrow from "../assets/icons/left-arrow.png";
 import menu from "../assets/icons/menu.png";
-import search from "../assets/icons/search.svg";
+import search from "../assets/icons/loupe.png";
 import upload from "../assets/icons/upload.png";
 import rightArrow from "../assets/icons/right-arrow.png";
 import logout from "../assets/icons/logout.png";
-import eyeHide from "../assets/icons/eye-closed.svg";
-import eye from "../assets/icons/eye-open.svg";
+import eyeHide from "../assets/icons/eyebrow.png";
+import eye from "../assets/icons/eye.png";
 import play from "../assets/icons/play.png";
-import qa from "../assets/icons/barcode-qr.svg"
-import groups from "../assets/icons/users.svg"
-import calendar from "../assets/icons/calendar-days.svg";
-import chat from "../assets/icons/msgs.svg";
-import emailIcon from "../assets/icons/emai.png"
+import qa from "../assets/icons/qa.png"
+import groups from "../assets/icons/discussion.png"
+import calendar from "../assets/icons/calendar.png";
+import chat from "../assets/icons/chat.png";
+import emailIcon from "../assets/icons/email.png"
 import pwIcon from "../assets/icons/unlock.png"
-import friend from "../assets/icons/grid-circle-plus.svg"
-import pen from "../assets/icons/pen-writing-filled.svg"
+import friend from "../assets/icons/menu.png"
+import pen from "../assets/icons/pencil.png"
 export default {
   play,
   bookmark,
