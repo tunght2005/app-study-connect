@@ -12,7 +12,7 @@ const SearchInput = ({ initialQuery }) => {
     <View className="flex flex-row items-center space-x-7  h-10 mx-auto bg-[#F3F4F6FF] rounded-2xl border-2 border-[#efefff] mt-3">
       <Image source={icons.search} className="max-w-[25px] ml-2" resizeMode="contain" />
       <TextInput
-        className="text-base mt-0.5 text-black flex-1 font-pregular outline-none ml-0"
+        className="text-base  text-black flex-1 font-pregular outline-none ml-0"
         value={query}
         placeholder="Tìm kiếm nhóm"
         placeholderTextColor="#0a101"

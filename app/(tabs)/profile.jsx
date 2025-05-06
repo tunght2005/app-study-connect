@@ -11,13 +11,39 @@ import {
 import { icons } from '../../constants';
 import ButtonExtend from '../../components/ButtonExtend';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Link, router } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect } from 'react';
+import { Alert } from 'react-native';
 
 const Profile = () => {
-  const [name, setName] = useState('John K.');
-  const [email, setEmail] = useState('johnk@gmail.com');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [emailNotify, setEmailNotify] = useState(true);
   const [appNotify, setAppNotify] = useState(false);
+  // Fetch thông tin user khi mở profile
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const response = await fetch('http://192.168.0.105:8017/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
 
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Lỗi khi lấy dữ liệu');
+
+        setName(data.username || '');
+        setEmail(data.email || '');
+      } catch (err) {
+        Alert.alert('Lỗi', err.message);
+      }
+    };
+
+    fetchProfile();
+  }, []);
   return (
     <SafeAreaView className="bg-white h-full">
       <View className="space-y-4 mx-3 mt-2">
@@ -80,10 +106,49 @@ const Profile = () => {
               thumbColor={'white'}
             />
           </View>
+          {/* Lưu thông tin */}
+          <TouchableOpacity
+              onPress={async () => {
+                try {
+                  const token = await AsyncStorage.getItem('token');
+                  const response = await fetch('http://192.168.0.105:8017/api/auth/me', {
+                    method: 'PUT',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      username: name,
+                      email: email,
+                    }),
+                  });
+
+                  const data = await response.json();
+                  if (!response.ok) throw new Error(data.message || 'Cập nhật thất bại');
+
+                  Alert.alert('Thành công', 'Cập nhật thông tin thành công');
+                } catch (err) {
+                  Alert.alert('Lỗi', err.message);
+                }
+              }}
+              className="mt-4 bg-blue-600 py-3 rounded-md"
+            >
+              <Text className="text-white text-center font-semibold text-base">Lưu Thông Tin</Text>
+          </TouchableOpacity>
 
           {/* Logout */}
-          <TouchableOpacity className="mt-8 bg-black py-3 rounded-md">
-            <Text className="text-white text-center font-semibold text-base">Đăng xuất</Text>
+          <TouchableOpacity
+              onPress={async () => {
+                try {
+                  await AsyncStorage.removeItem('token');
+                  router.replace('/sign-in');
+                } catch (err) {
+                  Alert.alert('Lỗi', 'Không thể đăng xuất');
+                }
+              }}
+              className="mt-8 bg-black py-3 rounded-md"
+            >
+              <Text className="text-white text-center font-semibold text-base">Đăng Xuất</Text>
           </TouchableOpacity>
         </View>
       </View>

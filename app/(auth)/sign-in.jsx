@@ -5,6 +5,7 @@ import CustomButton from "../../components/CustomButton"
 import FormField  from "../../components/FormField";
 import { Link, router } from "expo-router";
 import { icons } from "../../constants";
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const SignIn = () => {
 const [form, setForm] = useState({
@@ -13,7 +14,39 @@ const [form, setForm] = useState({
 });
 const [showPassword, setShowPassword] = useState(false);
 const [isSubmitting, setIsSubmitting] = useState(false);
-const submit = () => {}
+const submit = async () => {
+  if (!form.email || !form.password) {
+    return Alert.alert("Lỗi", "Vui lòng nhập email và mật khẩu")
+  }
+
+  try {
+    setIsSubmitting(true)
+
+    const response = await fetch('http://192.168.0.105:8017/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(form)
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Đăng nhập thất bại')
+    }
+
+    // Lưu token vào AsyncStorage
+    await AsyncStorage.setItem('token', data.token)
+
+    Alert.alert("Thành công", "Đăng nhập thành công")
+    router.push('/groups') // hoặc bất kỳ trang chính nào
+  } catch (err) {
+    Alert.alert("Lỗi", err.message)
+  } finally {
+    setIsSubmitting(false)
+  }
+}
   return (
     <SafeAreaView className="bg-white h-full">
        <ScrollView>
@@ -24,7 +57,7 @@ const submit = () => {}
           }}
         >
           <View className="text-3xl font-semibold text-black mt-[-40] font-psemibold justify-center items-center">
-            StudyConnect
+            <Text>StudyConnect</Text> 
             <Text className="text-sm mt-3 mb-10">
                 Nhập thông tin vào để đăng nhập
             </Text>
@@ -66,7 +99,7 @@ const submit = () => {}
               href="/sign-up"
               className="text-lg font-normal text-gray-200"
             >
-              Đăng Ký
+              <Text> Đăng Ký</Text>
             </Link>
           </View>
         </View>

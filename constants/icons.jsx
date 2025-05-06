@@ -15,8 +15,8 @@ import qa from "../assets/icons/barcode-qr.svg"
 import groups from "../assets/icons/users.svg"
 import calendar from "../assets/icons/calendar-days.svg";
 import chat from "../assets/icons/msgs.svg";
-import emailIcon from "../assets/icons/envelope.svg"
-import pwIcon from "../assets/icons/lock.svg"
+import emailIcon from "../assets/icons/emai.png"
+import pwIcon from "../assets/icons/unlock.png"
 import friend from "../assets/icons/grid-circle-plus.svg"
 import pen from "../assets/icons/pen-writing-filled.svg"
 export default {

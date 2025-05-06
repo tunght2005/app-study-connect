@@ -104,7 +104,7 @@ const Calendar = () => {
                 source={icons.plus}
                 className="max-w-[15px] max-h-[15px] mr-2"
                 resizeMode="contain"
-              />  Thêm Lịch</Text>
+              /> Thêm Lịch</Text>
           </TouchableOpacity>
       </View>
       </View>

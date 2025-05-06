@@ -14,7 +14,38 @@ const [form, setForm] = useState({
 });
 const [showPassword, setShowPassword] = useState(false);
 const [isSubmitting, setIsSubmitting] = useState(false);
-const submit = () => {}
+const submit = async () => {
+  if (!form.username || !form.email || !form.password) {
+    return Alert.alert("Lỗi", "Vui lòng điền đầy đủ thông tin");
+  }
+
+  try {
+    setIsSubmitting(true);
+
+    const response = await fetch('http://192.168.0.105:8017/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(form)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Đăng ký thất bại');
+    }
+
+    Alert.alert("Thành công", "Đăng ký thành công. Mời bạn đăng nhập.");
+    router.push('/sign-in');
+
+  } catch (err) {
+    Alert.alert("Lỗi", err.message);
+  } finally {
+    setIsSubmitting(false);
+  }
+}
+
   return (
     <SafeAreaView className="bg-white h-full">
        <ScrollView>
@@ -25,7 +56,7 @@ const submit = () => {}
           }}
         >
           <View className="text-3xl font-semibold text-black mt-[-40] font-psemibold justify-center items-center">
-            StudyConnect
+          <Text>StudyConnect</Text> 
             <Text className="text-sm mt-3 mb-10">
                 Nhập thông tin vào để đăng ký
             </Text>
@@ -75,7 +106,7 @@ const submit = () => {}
               href="/sign-in"
               className="text-lg font-normal text-gray-200"
             >
-              Đăng Nhập
+              <Text>Đăng Nhập</Text> 
             </Link>
           </View>
         </View>
