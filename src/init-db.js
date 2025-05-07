@@ -5,9 +5,11 @@ import RefreshToken from '~/models/refreshTokenModel.js'
 import Conversation from '~/models/conversationModel.js'
 import Message from '~/models/messageModel.js'
 import ReadReceipt from '~/models/readReceiptModel.js'
+// eslint-disable-next-line no-unused-vars
 import FriendRequest from '~/models/friendRequestModel.js'
 import Friend from '~/models/friendModel.js'
 import Group from '~/models/groupModel.js'
+
 
 const run = async () => {
   await connectDB()

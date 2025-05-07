@@ -5,30 +5,31 @@ import Friend from '~/models/friendModel.js'
 // import User from '~/models/userModel.js'
 import mongoose from 'mongoose'
 
+
 const router = express.Router()
 
 // Gửi lời mời kết bạn
 router.post('/request', async (req, res) => {
-  const { senderId, receiverId } = req.body
+  const { senderId, recipientId } = req.body
 
-  if (!mongoose.Types.ObjectId.isValid(senderId) || !mongoose.Types.ObjectId.isValid(receiverId)) {
+  if (!mongoose.Types.ObjectId.isValid(senderId) || !mongoose.Types.ObjectId.isValid(recipientId)) {
     return res.status(400).json({ error: 'ID không hợp lệ' })
   }
 
-  if (senderId === receiverId) {
+  if (senderId === recipientId) {
     return res.status(400).json({ error: 'Không thể tự gửi lời mời kết bạn' })
   }
 
-  const existing = await FriendRequest.findOne({ sender: senderId, receiver: receiverId })
+  const existing = await FriendRequest.findOne({ sender: senderId, recipient: recipientId })
   if (existing) return res.status(400).json({ error: 'Đã gửi lời mời trước đó' })
 
-  const request = await FriendRequest.create({ sender: senderId, receiver: receiverId })
+  const request = await FriendRequest.create({ sender: senderId, recipient: recipientId })
   res.status(201).json(request)
 })
 
 // Lấy danh sách lời mời đến (cho user)
 router.get('/requests/:userId', async (req, res) => {
-  const requests = await FriendRequest.find({ receiver: req.params.userId, status: 'pending' })
+  const requests = await FriendRequest.find({ recipient: req.params.userId, status: 'pending' })
     .populate('sender', 'username email')
   res.json(requests)
 })
@@ -38,12 +39,15 @@ router.post('/accept', async (req, res) => {
   const { requestId } = req.body
 
   const request = await FriendRequest.findById(requestId)
+  // eslint-disable-next-line no-console
+  console.log('Request:', request)
+
   if (!request || request.status !== 'pending') return res.status(400).json({ error: 'Lời mời không hợp lệ' })
 
   request.status = 'accepted'
   await request.save()
 
-  await Friend.create({ user1: request.sender, user2: request.receiver })
+  await Friend.create({ senderId: request.sender, recipientId: request.recipient })
 
   res.json({ message: 'Đã chấp nhận kết bạn' })
 })

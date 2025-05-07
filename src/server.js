@@ -8,6 +8,7 @@ import http from 'http'
 import { Server } from 'socket.io'
 import { initSocket } from '~/sockets/index.js'
 import friendRoutes from '~/routes/v1/friendRoutes.js'
+import chatRoutes from '~/routes/v1/chatRoutes.js'
 
 
 dotenv.config()
@@ -50,6 +51,8 @@ connectDB()
 app.use('/api/auth', authRoutes)
 app.use('/api/v1/schedule', scheduleRoutes)
 app.use('/api/v1/friend', friendRoutes)
+app.use('/api/v1/chat', chatRoutes)
+app.use('/uploads', express.static('uploads'))
 
 server.listen(port, hostname, () => {
   // eslint-disable-next-line no-console

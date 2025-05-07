@@ -6,6 +6,8 @@ const messageSchema = new mongoose.Schema({
   content: { type: String, required: [true, 'content is required'] },
   conversationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Conversation', required: false },
   groupId: { type: mongoose.Schema.Types.ObjectId, ref: 'Group', required: false },
+  fileUrl: { type: String, default: null },
+  fileName: { type: String, default: null },
   timestamp: { type: Date, default: Date.now }
 })
 
