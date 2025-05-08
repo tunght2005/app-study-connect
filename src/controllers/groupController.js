@@ -222,6 +222,31 @@ const removeMemberFromGroup = async (req, res) => {
     res.status(500).json({ message: 'Lỗi server', error })
   }
 }
+export const joinGroup = async (req, res) => {
+  try {
+    const groupId = req.params.groupId; // Lấy từ URL
+    const userId = req.user.id;
+
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ message: 'Nhóm không tồn tại' });
+    }
+
+    if (group.members.includes(userId)) {
+      return res.status(200).json({
+        message: 'Bạn đã là thành viên của nhóm. Chuyển hướng đến chat.',
+        group
+      });
+    }
+
+    group.members.push(userId);
+    await group.save();
+
+    res.status(200).json({ message: 'Tham gia nhóm thành công', group });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi server', error: error.message });
+  }
+};
 
 export default {
   createGroup,
@@ -231,5 +256,6 @@ export default {
   deleteGroup,
   updateGroupStatus,
   addMemberToGroup,
-  removeMemberFromGroup
+  removeMemberFromGroup,
+  joinGroup
 }

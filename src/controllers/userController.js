@@ -1,49 +1,60 @@
 import FriendRequest from '../models/friendRequestModel.js'
 import User from '../models/userModel.js'
-
+import Group from '../models/groupModel.js';
 // Gửi yêu cầu kết bạn
 export const sendFriendRequest = async (req, res) => {
   try {
-    const { userId } = req.body // ID của người được gửi yêu cầu
-    const senderId = req.user.id // ID của người gửi yêu cầu (lấy từ token)
+    const { keyword } = req.body // Từ khóa tìm kiếm (username hoặc email)
+    const senderId = req.user.id// ID của người gửi yêu cầu (lấy từ token)
 
     console.log('Sender ID:', senderId) // Kiểm tra giá trị của senderId
-    console.log('Receiver ID:', userId)
+    console.log('Keyword:', keyword)
 
-    // Kiểm tra nếu người gửi và người nhận là cùng một người
-    if (senderId === userId) {
-      return res.status(400).json({ message: 'Không thể gửi yêu cầu kết bạn cho chính mình' })
+    // Kiểm tra nếu không có keyword
+    if (!keyword) {
+      return res.status(400).json({ message: 'Vui lòng cung cấp từ khóa tìm kiếm' });
     }
 
-    // Kiểm tra nếu người nhận tồn tại
-    const receiver = await User.findById(userId)
+    // Tìm người nhận dựa trên keyword
+    const receiver = await User.findOne({
+      $or: [
+        { username: { $regex: keyword, $options: 'i' } }, // Tìm theo username (không phân biệt hoa thường)
+        { email: { $regex: keyword, $options: 'i' } } // Tìm theo email (không phân biệt hoa thường)
+      ]
+    });
+
     if (!receiver) {
-      return res.status(404).json({ message: 'Người dùng được gửi yêu cầu không tồn tại' })
+      return res.status(404).json({ message: 'Người dùng được gửi yêu cầu không tồn tại' });
+    }
+
+    // Kiểm tra nếu người gửi và người nhận là cùng một người
+    if (senderId === receiver._id.toString()) {
+      return res.status(400).json({ message: 'Không thể gửi yêu cầu kết bạn cho chính mình' });
     }
 
     // Kiểm tra nếu đã tồn tại yêu cầu kết bạn giữa hai người
     const existingRequest = await FriendRequest.findOne({
       sender: senderId,
-      receiver: userId
-    })
+      receiver: receiver._id
+    });
 
     if (existingRequest) {
-      return res.status(400).json({ message: 'Yêu cầu kết bạn đã tồn tại' })
+      return res.status(400).json({ message: 'Yêu cầu kết bạn đã tồn tại' });
     }
 
     // Tạo yêu cầu kết bạn mới
     const friendRequest = new FriendRequest({
       sender: senderId,
-      receiver: userId
-    })
+      receiver: receiver._id
+    });
 
-    await friendRequest.save()
+    await friendRequest.save();
 
-    res.status(201).json({ message: 'Gửi yêu cầu kết bạn thành công', friendRequest })
+    res.status(201).json({ message: 'Gửi yêu cầu kết bạn thành công', friendRequest });
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi server', error: error.message })
+    res.status(500).json({ message: 'Lỗi server', error: error.message });
   }
-}
+};
 
 export const respondToFriendRequest = async (req, res) => {
   try {
@@ -88,21 +99,36 @@ export const respondToFriendRequest = async (req, res) => {
   }
 }
 
-
-export const getFriendsList = async (req, res) => {
+// Lấy danh sách lời mời kết bạn
+export const getFriendRequests = async (req, res) => {
   try {
-    const userId = req.user.id // Lấy ID từ middleware đã xác thực
+    const userId = req.user.id; // ID của người dùng hiện tại (lấy từ token)
 
-    // Lấy người dùng và populate danh sách bạn bè
-    const user = await User.findById(userId).populate('friends', 'name email')
+    // Tìm tất cả các yêu cầu kết bạn mà người dùng hiện tại là người nhận
+    const friendRequests = await FriendRequest.find({ receiver: userId, status: 'pending' })
+      .populate('sender', 'username email') // Lấy thông tin người gửi
+      .sort({ createdAt: -1 }); // Sắp xếp theo thời gian mới nhất
 
+    res.status(200).json({ message: 'Lấy danh sách lời mời kết bạn thành công', friendRequests });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi server', error: error.message });
+  }
+};
+
+// Lấy danh sách bạn bè
+export const getFriends = async (req, res) => {
+  try {
+    const userId = req.user.id; // ID của người dùng hiện tại (lấy từ token)
+
+    // Tìm người dùng hiện tại và populate danh sách bạn bè
+    const user = await User.findById(userId).populate('friends', 'username email');
     if (!user) {
-      return res.status(404).json({ message: 'Người dùng không tồn tại' })
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
     }
 
-    res.status(200).json({ friends: user.friends })
+    res.status(200).json({ message: 'Lấy danh sách bạn bè thành công', friends: user.friends });
   } catch (error) {
-    console.error('Lỗi khi lấy danh sách bạn bè:', error)
-    res.status(500).json({ message: 'Lỗi server', error: error.message })
+    res.status(500).json({ message: 'Lỗi server', error: error.message });
   }
-}
+};
+
