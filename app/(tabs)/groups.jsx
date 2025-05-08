@@ -164,12 +164,12 @@ const GroupsApp = () => {
     console.log('👉 Đang join group với ID:', groupId); // Log tại đây
     try {
       const token = await getToken();
-      const res = await fetch(`http://192.168.0.105:8017/api/groups/add-member`, {
+      const res = await fetch(`http://192.168.0.105:8017/api/groups/join/${groupId}`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({}), // Hoặc { userId } nếu cần
+        // body: JSON.stringify({}), // Hoặc { userId } nếu cần
       });
       const data = await res.json();
       console.log('Toàn bộ response từ backend:', data);

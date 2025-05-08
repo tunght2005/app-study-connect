@@ -127,34 +127,32 @@ const ButtonExtend = () => {
   const [input, setInput] = useState('');
   const [friends, setFriends] = useState([]);
   const [invitations, setInvitations] = useState([]);
-  const [authToken, setAuthToken] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
+  const [authToken, setAuthToken] = useState(null);
 
-  useEffect(() => {
-    const fetchToken = async () => {
-      const token = await AsyncStorage.getItem('authToken');
+  // Lấy token khi mở modal
+  const getToken = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
       setAuthToken(token);
-    };
-    fetchToken();
-  }, []);
-
-  // Gọi fetch khi mở modal
-  useEffect(() => {
-    if (modalVisible) {
-      fetchFriendsAndInvites();
+      return token;
+    } catch (e) {
+      console.error('Lỗi khi lấy token:', e);
+      return null;
     }
-  }, [modalVisible]);
+  };
 
   const fetchFriendsAndInvites = async () => {
-    if (!authToken) return;
+    const token = await getToken();
+    if (!token) return;
     try {
-      const res = await fetch('http://192.168.0.105:8017/api/users/friends-and-invites', {
-        headers: { Authorization: `Bearer ${authToken}` },
+      const res = await fetch('http://192.168.0.105:8017/api/users/friends', {
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       if (res.ok) {
         setFriends(data.friends || []);
-        setInvitations(data.invitations || []);
+        setInvitations(data.requests || []);
       } else {
         Alert.alert('Lỗi', data.message || 'Không thể tải danh sách bạn bè.');
       }
@@ -164,56 +162,83 @@ const ButtonExtend = () => {
   };
 
   const sendInvite = async () => {
-    if (!input.trim() || !authToken) return;
-    try {
-      const res = await fetch('http://192.168.0.105:8017/api/users/send-friend-request', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({ targetEmail: input }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        Alert.alert('Thành công', 'Lời mời đã được gửi.');
-        setInput('');
-        fetchFriendsAndInvites();
-      } else {
-        Alert.alert('Lỗi', data.message || 'Không gửi được lời mời.');
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  if (!input.trim()) return;
+  const token = await getToken();
+  if (!token) return;
 
-  const respondInvite = async (inv, action) => {
-    if (!authToken) return;
-    try {
-      const res = await fetch('http://192.168.0.105:8017/api/users/respond-friend-request', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({ requestId: inv._id, action }),
-      });
-      if (res.ok) {
-        fetchFriendsAndInvites();
-      } else {
-        Alert.alert('Lỗi', 'Không xử lý được lời mời.');
-      }
-    } catch (err) {
-      console.error(err);
+  try {
+    const res = await fetch('http://192.168.0.105:8017/api/users/send-friend-request', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ keyword: input }), // 👈 SỬA ở đây
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      Alert.alert('Thành công', 'Lời mời đã được gửi.');
+      setInput('');
+      fetchFriendsAndInvites();
+    } else {
+      Alert.alert('Lỗi', data.message || 'Không gửi được lời mời.');
     }
-  };
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const respondInvite = async (inv, status) => {
+  const token = await getToken();
+  if (!token) return;
+  try {
+    const res = await fetch('http://192.168.0.105:8017/api/users/respond-friend-request', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ requestId: inv._id, status }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      Alert.alert('Thành công', `Bạn đã ${status === 'accepted' ? 'chấp nhận' : 'từ chối'} lời mời.`);
+      fetchFriendRequests(); // gọi lại danh sách
+    } else {
+      Alert.alert('Lỗi', data.message || 'Không xử lý được lời mời.');
+    }
+  } catch (err) {
+    console.error(err);
+    Alert.alert('Lỗi', 'Có lỗi xảy ra.');
+  }
+};
+const fetchFriendRequests = async () => {
+  const token = await getToken();
+  if (!token) return;
+  try {
+    const res = await fetch('http://192.168.0.105:8017/api/users/friend-requests', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setInvitations(data.friendRequests || []);
+    } else {
+      Alert.alert('Lỗi', data.message || 'Không thể tải lời mời.');
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   const removeFriend = async (id) => {
-    if (!authToken) return;
+    const token = await getToken();
+    if (!token) return;
     try {
       const res = await fetch(`http://192.168.0.105:8017/api/users/remove-friend/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${authToken}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
         fetchFriendsAndInvites();
@@ -225,27 +250,13 @@ const ButtonExtend = () => {
     }
   };
 
-  // const searchUsers = async (text) => {
-  //   setInput(text);
-  //   if (!text.trim()) {
-  //     setSearchResults([]);
-  //     return;
-  //   }
-  //   try {
-  //     const res = await fetch(`http://192.168.0.105:8017/api/users/search?query=${encodeURIComponent(text)}`, {
-  //       headers: { Authorization: `Bearer ${authToken}` },
-  //     });
-  //     const data = await res.json();
-  //     if (res.ok) {
-  //       setSearchResults(data);
-  //     } else {
-  //       setSearchResults([]);
-  //     }
-  //   } catch (err) {
-  //     console.error(err);
-  //     setSearchResults([]);
-  //   }
-  // };
+  useEffect(() => {
+    if (modalVisible) {
+      fetchFriendRequests();
+      fetchFriendsAndInvites();
+    }
+  }, [modalVisible]);
+  
 
   return (
     <>
@@ -263,7 +274,7 @@ const ButtonExtend = () => {
                 className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm"
                 placeholder="Nhập email để mời"
                 value={input}
-                // onChangeText={searchUsers}
+                onChangeText={setInput}
               />
               <TouchableOpacity className="ml-2 bg-indigo-600 px-4 py-2 rounded-md" onPress={sendInvite}>
                 <Text className="text-white text-sm font-semibold">Gửi</Text>
@@ -306,19 +317,20 @@ const ButtonExtend = () => {
               ) : (
                 invitations.map((inv) => (
                   <View key={inv._id} className="flex-row justify-between items-center">
-                    <Text className="text-sm font-medium">{inv.senderName || inv.senderEmail}</Text>
+                    <Text className="text-sm font-medium">{inv.sender.username || inv.sender.email}</Text>
                     <View className="flex-row gap-2">
-                      <TouchableOpacity onPress={() => respondInvite(inv, 'accept')}>
+                      <TouchableOpacity onPress={() => respondInvite(inv, 'accepted')}>
                         <Text className="text-green-600 text-xs font-semibold">Chấp nhận</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={() => respondInvite(inv, 'decline')}>
-                        <Text className="text-red-600 text-xs font-semibold">Hủy</Text>
+                      <TouchableOpacity onPress={() => respondInvite(inv, 'rejected')}>
+                        <Text className="text-red-600 text-xs font-semibold">Từ chối</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
                 ))
               )}
             </View>
+
 
             <Pressable className="absolute top-3 right-3" onPress={() => setModalVisible(false)}>
               <Text className="text-gray-500 text-lg">×</Text>
@@ -331,3 +343,4 @@ const ButtonExtend = () => {
 };
 
 export default ButtonExtend;
+
