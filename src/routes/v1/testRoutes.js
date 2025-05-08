@@ -1,7 +1,7 @@
 import express from 'express'
 import User from '~/models/userModel.js'
 import Message from '~/models/messageModel.js'
-import Group from '~/models/groupModel.js'
+// import Group from '~/models/groupModel.js'
 
 const router = express.Router()
 
@@ -15,9 +15,9 @@ router.get('/messages/:conversationId', async (req, res) => {
   res.json(messages)
 })
 
-router.get('/groups', async (req, res) => {
-  const groups = await Group.find()
-  res.json(groups)
-})
+// router.get('/groups', async (req, res) => {
+//   const groups = await Group.find()
+//   res.json(groups)
+// })
 
 export default router

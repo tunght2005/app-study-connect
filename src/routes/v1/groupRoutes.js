@@ -18,10 +18,10 @@ router.get('/:id', authenticateToken, groupController.getGroupById)
 router.put('/:id', authenticateToken, authorizeRoles('admin'), groupController.updateGroup)
 
 // Mời thành viên vào nhóm
-router.post('/:id/add-member', authenticateToken, groupController.addMemberToGroup)
+router.post('/add-member', authenticateToken, groupController.addMemberToGroup)
 
 // Xóa thành viên khỏi nhóm
-router.post('/:id/remove-member', authenticateToken, groupController.removeMemberFromGroup)
+router.post('/remove-member', authenticateToken, groupController.removeMemberFromGroup)
 
 // Cập nhật trạng thái nhóm
 router.patch('/:id/status', authenticateToken, authorizeRoles('admin'), groupController.updateGroupStatus)

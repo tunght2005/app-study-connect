@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   avatar: String,
-  friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Danh sách bạn bè
+  friends: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], default: [] }, // Danh sách bạn bè
   createdAt: { type: Date, default: Date.now },
   updatedAt: Date,
   role: {
@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
-})
+});
 
-const User = mongoose.model.User || mongoose.model('User', userSchema)
+const User = mongoose.models.User || mongoose.model('User', userSchema)
 export default User

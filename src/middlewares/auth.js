@@ -9,6 +9,7 @@ const authenticate = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET) // Kiểm tra token hợp lệ
     req.user = decoded // Gán thông tin người dùng vào req.user
+    req.user = { id: decoded.userId }
     req.userId = decoded.userId // 👈 thêm dòng này
     next() // Chuyển sang middleware tiếp theo
   } catch (err) {

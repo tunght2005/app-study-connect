@@ -1,8 +1,7 @@
 import express from 'express'
-import { sendFriendRequest } from '../../controllers/userController'
+import { sendFriendRequest , respondToFriendRequest, getFriendsList} from '../../controllers/userController'
 import authenticateToken from '~/middlewares/auth'
 import authorizeRoles from '~/middlewares/authorizeRole'
-
 const router = express.Router()
 
 // Ví dụ route chỉ admin mới được xem danh sách người dùng
@@ -18,6 +17,13 @@ router.post('/create-class', authenticateToken, authorizeRoles('admin', 'student
 })
 
 // Gửi yêu cầu kết bạn
+router.post('/send-friend-request', authenticateToken, sendFriendRequest);
+
+// Chấp nhận hoặc từ chối yêu cầu kết bạn
+router.post('/respond-friend-request', authenticateToken, respondToFriendRequest);
+
+// Gửi yêu cầu kết bạn
 router.post('/add-friend', authenticateToken, sendFriendRequest)
 
+router.get('/friends-and-invites', authenticateToken, getFriendsList);
 export default router
