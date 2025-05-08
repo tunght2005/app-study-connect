@@ -13,9 +13,12 @@ const run = async () => {
     console.log('User không tồn tại')
     process.exit()
   }
+  // Tạo token JWT
+  // eslint-disable-next-line no-unused-vars, no-undef
+  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' })
 
   await Token.create({
-    token: 'abcdef123456',
+    token: Token,
     userId: user._id, // Sử dụng _id của user tìm được
     expiresAt: new Date(Date.now() + 3600 * 1000) // hết hạn sau 1 tiếng
   })

@@ -1,44 +1,36 @@
 const express = require('express')
 const router = express.Router()
-const Schedule = require('~/models/schedule')
-import User from '~/models/userModel.js'
-router.get('/:userId', async (req, res) => {
+import Schedule from '~/models/schedule.js'
+import authenticateToken from '~/middlewares/auth.js'
+// Lấy tất cả lịch của user đã xác thực
+router.get('/get', authenticateToken, async (req, res) => {
   try {
-    const schedules = await Schedule.find({ userId: req.params.userId })
+    const schedules = await Schedule.find({ userId: req.user._id })
     res.json(schedules)
   } catch (err) {
     res.status(500).json({ error: 'Lỗi server' })
   }
 })
 
-router.post('/', async (req, res) => {
+// Tạo mới lịch cho user đã xác thực
+router.post('/post', authenticateToken, async (req, res) => {
   try {
-    const { userId, title, description, datetime } = req.body
-
-    // Kiểm tra userId có tồn tại không
-    const existingUser = await User.findById(userId)
-    if (!existingUser) {
-      return res.status(404).json({ error: 'Người dùng không tồn tại' })
-    }
+    const { title, description, datetime } = req.body
+    const userId = req.user._id
 
     const newSchedule = new Schedule({ userId, title, description, datetime })
     await newSchedule.save()
-    // eslint-disable-next-line no-console
-    console.log(req.body)
-
-    // Gửi thông báo socket
+    // Gửi thông báo tới client qua socket.io
     const io = req.app.get('io')
     if (io) {
       io.emit('new_schedule', newSchedule)
       // eslint-disable-next-line no-console
-      console.log('Đã gửi thông báo tới các client', newSchedule) // gửi đến tất cả client
-    } else {
-      // eslint-disable-next-line no-console
-      console.warn('không tìm thấy socket io trong req.app ')
+      console.log('Đã gửi thông báo tới các client', newSchedule)
     }
+
     res.status(201).json(newSchedule)
   } catch (err) {
-    res.status(400).json({ erorr: err.message })
+    res.status(400).json({ error: err.message })
   }
 })
 

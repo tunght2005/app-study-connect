@@ -28,8 +28,8 @@ router.post('/request', async (req, res) => {
 })
 
 // Lấy danh sách lời mời đến (cho user)
-router.get('/requests/:userId', async (req, res) => {
-  const requests = await FriendRequest.find({ recipient: req.params.userId, status: 'pending' })
+router.get('/request/get', async (req, res) => {
+  const requests = await FriendRequest.find({ recipient: req.user.id, status: 'pending' })
     .populate('sender', 'username email')
   res.json(requests)
 })
@@ -64,8 +64,8 @@ router.post('/reject', async (req, res) => {
 })
 
 // Lấy danh sách bạn bè của một user
-router.get('/friends/:userId', async (req, res) => {
-  const { userId } = req.params
+router.get('/friends/allfriend', async (req, res) => {
+  const { userId } = req.user.userId
   const friends = await Friend.find({
     $or: [{ user1: userId }, { user2: userId }]
   }).populate('user1 user2', 'username email')
