@@ -1,5 +1,5 @@
 import express from 'express'
-import { sendFriendRequest , respondToFriendRequest, getFriendRequests, getFriends} from '../../controllers/userController'
+import { sendFriendRequest , respondToFriendRequest, getFriendRequests, getFriends, removeFriend} from '../../controllers/userController'
 import authenticateToken from '~/middlewares/auth'
 import authorizeRoles from '~/middlewares/authorizeRole'
 const router = express.Router()
@@ -29,6 +29,8 @@ router.post('/respond-friend-request', authenticateToken, respondToFriendRequest
 // Lấy danh sách lời mời kết bạn
 router.get('/friend-requests', authenticateToken, getFriendRequests);
 
+//Xóa
+router.delete('/remove-friend', authenticateToken, removeFriend);
 // Lấy danh sách bạn bè
 router.get('/friends', authenticateToken, getFriends);
 export default router

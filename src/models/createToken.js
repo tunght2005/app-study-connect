@@ -15,7 +15,7 @@ const run = async () => {
   }
 
   await Token.create({
-    token: 'abcdef123456',
+    token: Token,
     userId: user._id, // Sử dụng _id của user tìm được
     expiresAt: new Date(Date.now() + 3600 * 1000) // hết hạn sau 1 tiếng
   })
