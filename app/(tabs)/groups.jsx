@@ -1,5 +1,7 @@
 import { Alert, Animated } from 'react-native'; // nằm ở đầu file
 import { useRef, useEffect } from 'react';
+import { useRouter } from "expo-router";
+
 import React, { useState } from 'react';
 import {
   View,
@@ -36,6 +38,7 @@ const getToken = async () => {
 };
 
 const GroupsApp = () => {
+  const router = useRouter();
   // Hiệu ứng nút
   const widthAnim = useRef(new Animated.Value(44)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -136,10 +139,10 @@ const GroupsApp = () => {
       });
   
       const data = await res.json();
-      console.log('✅ Nhóm vừa tạo:', data.group);
+      console.log('Nhóm vừa tạo:', data.group);
   
       if (res.ok) {
-        // ✅ Gọi lại API để lấy danh sách chuẩn
+        //Gọi lại API để lấy danh sách chuẩn
         const refreshed = await fetch('http://192.168.0.105:8017/api/groups', {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -161,7 +164,7 @@ const GroupsApp = () => {
   
 
   const handleJoinGroup = async (groupId) => {
-    console.log('👉 Đang join group với ID:', groupId); // Log tại đây
+    console.log(' Đang join group với ID:', groupId); // Log tại đây
     try {
       const token = await getToken();
       const res = await fetch(`http://192.168.0.105:8017/api/groups/join/${groupId}`, {
@@ -173,8 +176,16 @@ const GroupsApp = () => {
       });
       const data = await res.json();
       console.log('Toàn bộ response từ backend:', data);
-      if (res.ok) Alert.alert('Thông báo', 'Tham gia nhóm thành công!');
-      else Alert.alert('Lỗi', data.message || 'Không thể tham gia nhóm');
+      if (res.ok) {
+        // Alert.alert('Thông báo', 'Tham gia nhóm thành công!');
+        router.push({
+          pathname: "/(chat)/[id].jsx",
+          // pathname: "/(chat)/demo.jsx",
+          params: { groupId },
+        });
+      } else {
+        Alert.alert('Lỗi', data.message || 'Không thể tham gia nhóm');
+      }
     } catch (e) {
       console.error(e);
     }

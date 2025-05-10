@@ -13,6 +13,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import SearchInput from '../../components/SearchInput';
 import ButtonExtend from '../../components/ButtonExtend';
 import { icons } from '../../constants';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { router } from "expo-router";
+
 
 const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
@@ -70,6 +73,9 @@ const ChatScreen = () => {
      <SafeAreaView className="bg-white h-full">
       {/* Header */}
       <View className="flex-row justify-between items-center mx-3 mt-2">
+        <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
         <Text className="font-semibold text-base flex-1 text-center ml-4">Chat</Text>
         <ButtonExtend/>
       </View>

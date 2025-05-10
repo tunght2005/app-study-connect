@@ -236,9 +236,13 @@ const fetchFriendRequests = async () => {
     const token = await getToken();
     if (!token) return;
     try {
-      const res = await fetch(`http://192.168.0.105:8017/api/users/remove-friend/${id}`, {
+      const res = await fetch(`http://192.168.0.105:8017/api/users/remove-friend`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({ userId: id }),
       });
       if (res.ok) {
         fetchFriendsAndInvites();
