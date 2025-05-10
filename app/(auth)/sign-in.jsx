@@ -38,6 +38,8 @@ const submit = async () => {
 
     // Lưu token vào AsyncStorage
     await AsyncStorage.setItem('token', data.token)
+    await AsyncStorage.setItem('userId', data.userId)
+    console.log('>>',data)
 
     Alert.alert("Thành công", "Đăng nhập thành công")
     router.push('/groups') // hoặc bất kỳ trang chính nào

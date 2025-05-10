@@ -1,79 +1,142 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Image,
   Modal,
-  Pressable,
+  Dimensions,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ButtonExtend from '../../components/ButtonExtend';
-import { icons } from '../../constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const defaultQuestions = [
-  {
-    id: 1,
-    title: 'Best coding tools',
-    description: 'Explore popular IDEs and tools.',
-    responses: 82,
-    image: 'https://storage.googleapis.com/a1aa/image/e69e8cf3-e4f2-4570-00ba-b6dcff15daf1.jpg',
-    answerTrue: 'Đúng',
-    answerFalse: 'Sai',
-  },
-  {
-    id: 2,
-    title: 'AI career tips',
-    description: 'Insights into AI job roles.',
-    responses: 45,
-    image: 'https://storage.googleapis.com/a1aa/image/cb0f587f-c0f0-4420-a7cc-1338205b4611.jpg',
-    answerTrue: 'Đúng',
-    answerFalse: 'Sai',
-  },
-  {
-    id: 3,
-    title: 'Web dev trends',
-    description: 'Latest frameworks to watch.',
-    responses: 67,
-    image: 'https://storage.googleapis.com/a1aa/image/70c34ec6-2630-4018-9e48-438949258334.jpg',
-    answerTrue: 'Đúng',
-    answerFalse: 'Sai',
-  },
-  {
-    id: 4,
-    title: 'Cloud storage pros',
-    description: 'Debate on best platforms.',
-    responses: 30,
-    image: 'https://storage.googleapis.com/a1aa/image/35d3c626-ad58-439f-4aab-83db42ec693f.jpg',
-    answerTrue: 'Đúng',
-    answerFalse: 'Sai',
-  },
-];
-
+const API_BASE = 'http://192.168.0.105:8017/api/v1/qa';
+const { height } = Dimensions.get('window');
+const getToken = async () => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    return token;
+  } catch (e) {
+    console.error('Lỗi khi lấy token:', e);
+    return null;
+  }
+};
 const QuestA = () => {
-  const [questions, setQuestions] = useState(defaultQuestions);
+  const [questions, setQuestions] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalAnswerOptionsVisible, setModalAnswerOptionsVisible] = useState(false);
+  const [modalExplanationVisible, setModalExplanationVisible] = useState(false);
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
+
   const [form, setForm] = useState({
-    image: '',
     title: '',
     description: '',
-    answerTrue: '',
-    answerFalse: '',
-    responses: '',
+    explanation: '',
+    correctAnswerIndex: '',
+    answers: ['', '', '', ''],
   });
 
-  const addQuestion = () => {
-    if (!form.image || !form.title || !form.description || !form.answerTrue || !form.answerFalse || !form.responses) return;
-    const newQuestion = {
-      ...form,
-      id: Date.now(),
-      responses: parseInt(form.responses),
-    };
-    setQuestions((prev) => [...prev, newQuestion]);
-    setForm({ image: '', title: '', description: '', answerTrue: '', answerFalse: '', responses: '' });
-    setModalVisible(false);
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
+
+  const fetchQuestions = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const res = await fetch(`${API_BASE}/get`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setQuestions(data);
+    } catch (error) {
+      console.log('Lỗi khi tải câu hỏi:', error.message);
+    }
+  };
+
+const addQuestion = async () => {
+  if (!form.title || !form.description || form.answers.some((a) => a === '') || form.correctAnswerIndex === '') {
+    Alert.alert('Thông báo', 'Vui lòng điền đầy đủ thông tin.');
+    return;
+  }
+
+  const index = parseInt(form.correctAnswerIndex, 10);
+  if (isNaN(index) || index < 0 || index > 3) {
+    Alert.alert('Lỗi', 'Đáp án đúng phải là một số từ 0 đến 3.');
+    return;
+  }
+
+  const token = await AsyncStorage.getItem('token');
+  const userId = await AsyncStorage.getItem('userId'); // 👈 lấy userId đã lưu khi login
+  if (!token || !userId) {
+    Alert.alert('Lỗi', 'Không tìm thấy token hoặc userId. Vui lòng đăng nhập lại.');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        title: form.title,
+        description: form.description,
+        explanation: form.explanation,
+        correctAnswerIndex: index,
+        answers: form.answers.map((text) => ({ text })),
+        author: userId, // 👈 thêm dòng này
+      }),
+    });
+    console.log('userId', userId)
+
+    const data = await res.json();
+    console.log('Phản hồi từ server:', data);
+
+    if (res.ok) {
+      setQuestions((prev) => [...prev, data]);
+      setForm({
+        title: '',
+        description: '',
+        explanation: '',
+        correctAnswerIndex: '',
+        answers: ['', '', '', ''],
+        author: userId
+      });
+      setModalVisible(false);
+    } else {
+      Alert.alert('Lỗi', data.message || 'Không thể thêm câu hỏi.');
+    }
+  } catch (err) {
+    console.log('Lỗi khi thêm câu hỏi:', err.message);
+  }
+};
+
+  const submitAnswer = async (questionId, idx) => {
+    try {
+      setSelectedAnswerIndex(idx);
+      const token = await AsyncStorage.getItem('token');
+      const res = await fetch(`${API_BASE}/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          questionId,
+          selectedAnswerIndex: idx,
+        }),
+      });
+
+      const data = await res.json();
+      console.log(data);
+    } catch (error) {
+      console.log('Lỗi khi gửi đáp án:', error.message);
+    }
   };
 
   return (
@@ -81,56 +144,57 @@ const QuestA = () => {
       <View className="space-y-4 mx-3 mt-2">
         <View className="flex-row justify-between items-center">
           <Text className="font-semibold text-base flex-1 text-center ml-4">Q&A Section</Text>
-          <ButtonExtend/>
+          <ButtonExtend />
         </View>
-        <Text className="font-sm text-base text-center italic">Trả lời các câu hỏi dưới đây</Text>
-        <ScrollView className="space-y-3 max-h-[70vh]">
-          {questions.map((q) => (
-            <View key={q.id} className="flex-row justify-between border border-gray-200 rounded-lg p-4 bg-white shadow-sm mt-4">
+        <Text className="text-sm text-center italic">Trả lời các câu hỏi dưới đây</Text>
+        <ScrollView className="space-y-3" style={{ maxHeight: height * 0.7 }}>
+          {questions.map((q, index) => (
+            <View key={index} className="flex-row justify-between border border-gray-200 rounded-lg p-4 bg-white shadow-sm mt-4">
               <View className="w-[65%]">
                 <Text className="font-semibold text-sm mb-1">{q.title}</Text>
                 <Text className="text-xs text-gray-400 mb-1">{q.description}</Text>
-                <Text className="text-xs text-gray-400 mb-3">Responses: {q.responses}</Text>
                 <View className="flex-row space-x-3">
-                  <TouchableOpacity className="border border-indigo-600 rounded px-3 py-1">
-                    <Text className="text-indigo-600 text-xs font-medium">{q.answerTrue}</Text>
+                  <TouchableOpacity
+                    className="border border-indigo-600 rounded px-3 py-1"
+                    onPress={() => {
+                      setSelectedQuestion(q);
+                      setModalAnswerOptionsVisible(true);
+                      setSelectedAnswerIndex(null);
+                    }}
+                  >
+                    <Text className="text-indigo-600 text-xs font-medium">Modal chọn 4 đáp án</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity className="border border-indigo-600 rounded px-3 py-1">
-                    <Text className="text-indigo-600 text-xs font-medium">{q.answerFalse}</Text>
+                  <TouchableOpacity
+                    className="border border-indigo-600 rounded px-3 py-1"
+                    onPress={() => {
+                      setSelectedQuestion(q);
+                      setModalExplanationVisible(true);
+                    }}
+                  >
+                    <Text className="text-indigo-600 text-xs font-medium">Modal gồm giải thích và đáp án đúng</Text>
                   </TouchableOpacity>
                 </View>
               </View>
-              <Image
-                source={{ uri: q.image }}
-                className="w-20 h-20 rounded-md"
-                resizeMode="cover"
-              />
             </View>
           ))}
-
           <View className="items-center my-6">
             <TouchableOpacity
               onPress={() => setModalVisible(true)}
               className="bg-indigo-600 px-6 py-2 rounded-md flex-row items-center space-x-2"
             >
-              <Text className="text-white font-semibold flex justify-center items-center">
-                <Image
-                source={icons.plus}
-                className="max-w-[15px] max-h-[15px] mr-2"
-                resizeMode="contain"
-              /> 
-                Ask a Question
-              </Text>
+              <Text className="text-white font-semibold">Thêm câu hỏi</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </View> 
+      </View>
+
+      {/* Modal Thêm câu hỏi */}
       <Modal visible={modalVisible} transparent animationType="slide">
         <View className="flex-1 bg-black bg-opacity-40 justify-center items-center">
           <View className="bg-white w-11/12 max-h-[90%] rounded-lg p-6">
             <Text className="text-lg font-semibold text-center mb-4">Add New Question</Text>
             <ScrollView className="space-y-3">
-              {['image', 'title', 'description', 'answerTrue', 'answerFalse'].map((key) => (
+              {['title', 'description', 'explanation', 'correctAnswerIndex'].map((key) => (
                 <View key={key}>
                   <Text className="text-xs font-semibold mb-1 capitalize">{key}</Text>
                   <TextInput
@@ -138,7 +202,22 @@ const QuestA = () => {
                     onChangeText={(text) => setForm((prev) => ({ ...prev, [key]: text }))}
                     placeholder={`Enter ${key}`}
                     className="border border-gray-300 rounded px-3 py-2 text-sm"
-                    keyboardType={key === 'responses' ? 'numeric' : 'default'}
+                    keyboardType={key === 'correctAnswerIndex' ? 'numeric' : 'default'}
+                  />
+                </View>
+              ))}
+              {form.answers.map((ans, idx) => (
+                <View key={idx}>
+                  <Text className="text-xs font-semibold mb-1">Đáp án {idx + 1}</Text>
+                  <TextInput
+                    value={ans}
+                    onChangeText={(text) => {
+                      const newAnswers = [...form.answers];
+                      newAnswers[idx] = text;
+                      setForm((prev) => ({ ...prev, answers: newAnswers }));
+                    }}
+                    placeholder={`Nhập đáp án ${idx + 1}`}
+                    className="border border-gray-300 rounded px-3 py-2 text-sm"
                   />
                 </View>
               ))}
@@ -149,14 +228,66 @@ const QuestA = () => {
                 >
                   <Text className="text-gray-700">Hủy</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  className="px-4 py-2 bg-indigo-600 rounded"
-                  onPress={addQuestion}
-                >
+                <TouchableOpacity className="px-4 py-2 bg-indigo-600 rounded" onPress={addQuestion}>
                   <Text className="text-white">Thêm Câu Hỏi</Text>
                 </TouchableOpacity>
               </View>
             </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal chọn đáp án */}
+      <Modal visible={modalAnswerOptionsVisible} transparent animationType="fade">
+        <View className="flex-1 bg-black bg-opacity-40 justify-center items-center">
+          <View className="bg-white w-11/12 rounded-lg p-6">
+            <Text className="text-lg font-semibold text-center mb-4">Chọn 1 Đáp Án</Text>
+            {selectedQuestion?.answers?.map((a, idx) => {
+              let bgColor = 'bg-gray-100';
+              if (selectedAnswerIndex !== null) {
+                if (idx === selectedQuestion.correctAnswerIndex) bgColor = 'bg-green-200';
+                else if (idx === selectedAnswerIndex) bgColor = 'bg-red-200';
+              }
+              return (
+                <TouchableOpacity
+                  key={idx}
+                  className={`p-3 rounded-lg mb-2 ${bgColor}`}
+                  disabled={selectedAnswerIndex !== null}
+                  onPress={() => submitAnswer(selectedQuestion.id, idx)}
+                >
+                  <Text className="text-sm">• {a.text}</Text>
+                </TouchableOpacity>
+              );
+            })}
+            <TouchableOpacity
+              onPress={() => {
+                setModalAnswerOptionsVisible(false);
+                setSelectedAnswerIndex(null);
+              }}
+              className="mt-4 bg-indigo-600 px-4 py-2 rounded"
+            >
+              <Text className="text-white text-center">Đóng</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal giải thích */}
+      <Modal visible={modalExplanationVisible} transparent animationType="fade">
+        <View className="flex-1 bg-black bg-opacity-40 justify-center items-center">
+          <View className="bg-white w-10/12 rounded-lg p-5">
+            <Text className="text-base font-semibold mb-3">Đáp án đúng</Text>
+            <Text className="text-sm text-green-600 mb-2">
+              {selectedQuestion?.answers?.[selectedQuestion.correctAnswerIndex]?.text || 'Không rõ'}
+            </Text>
+            <Text className="text-base font-semibold mb-2">Giải thích</Text>
+            <Text className="text-sm text-gray-700 mb-4">{selectedQuestion?.explanation}</Text>
+            <TouchableOpacity
+              onPress={() => setModalExplanationVisible(false)}
+              className="bg-indigo-600 px-4 py-2 rounded"
+            >
+              <Text className="text-white text-center">Đóng</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
