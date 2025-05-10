@@ -235,8 +235,8 @@ const GroupsApp = () => {
   return (
     <SafeAreaView className="bg-white h-full">
         {/* Header */}
-        <View className="flex-row justify-between items-center mx-3">
-          <Text className="font-semibold text-base flex-1 text-center ml-4">Danh Sách Nhóm</Text>
+        <View className="flex-row justify-between items-center">
+          <Text className="font-semibold text-2xl flex-1 text-center ml-7 text-gray-200">Danh Sách Nhóm</Text>
           <ButtonExtend/>
         </View>
 
@@ -247,7 +247,7 @@ const GroupsApp = () => {
         {/* Nút Tạo Nhóm */}
         <View className="mx-3 mb-3 flex flex-row justify-between">
           {/* Title */}
-          <Text className="font-semibold text-base text-black mt-7 mb-4">Study Groups</Text>
+          <Text className="font-semibold text-2xl text-black mt-7 mb-4">Study Groups</Text>
           <Animated.View style={{ width: widthAnim }}>
             <TouchableOpacity
               onPress={handleExpand}
@@ -256,7 +256,7 @@ const GroupsApp = () => {
               <Image source={icons.plus} className="w-6 h-6 ml-3" resizeMode="contain" />
               <Animated.Text
                 style={{ opacity: opacityAnim }}
-                className="text-white ml-2 font-semibold text-sm"
+                className="text-white ml-2 font-semibold text-base"
               >
                 Tạo Nhóm
               </Animated.Text>
@@ -264,25 +264,25 @@ const GroupsApp = () => {
           </Animated.View>
         </View>
         {/* Danh sách nhóm */}
-      <ScrollView className="space-y-4 mx-3 mt-2">
+      <ScrollView className="space-y-4 mx-3 mt-4">
         {groups.map((group ) => (
           <View
             key={group._id}
-            className="flex-row justify-between items-center border border-gray-200 rounded-lg p-3 mb-4"
+            className="flex-row justify-between items-center border-gray-200 rounded-lg p-3 mb-4 border-2"
           >
             {console.log('👉 Nhóm:', group)}
             <View className="flex-col gap-1 max-w-[60%]">
-              <Text className="font-semibold text-sm text-black">{group.name}</Text>
+              <Text className="font-semibold text-xl text-black">{group.name}</Text>
               <Text className="text-xs text-gray-400">{group.status || 'Chưa rõ trạng thái'}</Text>
-              <View className="flex flex-row gap-4 justify-center items-center">
+              <View className="flex flex-row gap-5 justify-center items-center w-full">
                 <TouchableOpacity onPress={() => handleJoinGroup(group._id)} className="mt-1 w-14 border-2 border-indigo-300 rounded-md py-1 px-2 active:bg-orange-500">
-                  <Text className="text-indigo-600 text-xs font-medium text-center">Join</Text>
+                  <Text className="text-indigo-600 text-base font-medium text-center">Join</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleInviteMember(group._id, 'userId')} className="mt-1 w-14 border-2 border-blue-300 rounded-md py-1 px-2  active:bg-orange-500">
-                  <Text className="text-black-600 text-xs font-medium text-center">Mời</Text>
+                <TouchableOpacity onPress={() => handleInviteMember(group._id, 'userId')} className="mt-1 w-17 border-2 border-blue-300 rounded-md py-1 px-2  active:bg-orange-500">
+                  <Text className="text-red-400 text-base font-medium text-center">Add</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => handleDeleteGroup(group._id)} className="mt-1 w-14 py-1 px-2">
-                 <Image source={icons.del} className="w-5 h-5 mx-auto" resizeMode="contain" />
+                 <Image source={icons.del} className="w-6 h-6 mx-auto" resizeMode="contain" />
                 </TouchableOpacity>
               </View>
             </View>

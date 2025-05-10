@@ -8,8 +8,8 @@ import search from "../assets/icons/loupe.png";
 import upload from "../assets/icons/upload.png";
 import rightArrow from "../assets/icons/right-arrow.png";
 import logout from "../assets/icons/logout.png";
-import eyeHide from "../assets/icons/eyebrow.png";
-import eye from "../assets/icons/eye.png";
+import eyeHide from "../assets/icons/eye.png";
+import eye from "../assets/icons/eyebrow.png";
 import play from "../assets/icons/play.png";
 import qa from "../assets/icons/qa.png"
 import groups from "../assets/icons/discussion.png"

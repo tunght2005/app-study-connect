@@ -20,7 +20,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { Alert, Animated } from 'react-native'; // nằm ở đầu file
 // import socket from '../../utils/socket.js';
-
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 
 
@@ -169,18 +169,18 @@ const Calendar = () => {
     };
   return (
     <SafeAreaView className="bg-white h-full">
-      <View className="space-y-4 mx-3 mt-2">
+      <View className="space-y-4 mx-3">
         <View className="flex-row justify-between items-center">
-          <Text className="font-semibold text-base flex-1 text-center ml-4">Calendar Learning</Text>
+          <Text className="font-semibold text-2xl flex-1 text-center ml-7 text-gray-200">Calendar Learning</Text>
           <ButtonExtend />
         </View>
         <Image
-          className="rounded-xl w-full h-60 mb-4"
+          className="rounded-xl w-full h-60 mb-4 mt-4"
           source={{ uri: 'https://storage.googleapis.com/a1aa/image/ce5a4446-bd92-418c-1995-91c56c27fa3e.jpg' }}
           resizeMode="cover"
         />
         <View className="flex-row justify-between items-center mb-4">
-          <Text className="text-lg font-semibold text-red-500">Lịch Sắp Tới</Text>
+          <Text className="text-xl font-semibold text-red-500">Lịch Sắp Tới</Text>
           <Animated.View style={{ width: widthAnim }}>
               <TouchableOpacity
                 onPress={handleExpand}
@@ -198,18 +198,18 @@ const Calendar = () => {
         </View>
       </View>
       <ScrollView className="bg-white flex-1 p-4">
-        <View className="space-y-4">
+        <View className="space-y-4 mb-4 p-4">
           {sessions.map((item) => (
             <SessionItem key={item.id} date={item.date} title={item.title} subject={item.subject} />
           ))}
         </View>
         <Modal visible={addSessionVisible} transparent animationType="fade">
           <View className="flex-1 bg-opacity-40 justify-center items-center">
-            <View className="bg-white rounded-xl w-11/12 max-h-[90%] p-6">
-              <Text className="text-lg font-semibold mb-4 text-center">Thêm Lịch</Text>
+            <View className="bg-white rounded-xl w-11/12 max-h-[90%] p-6 border-2 border-gray-200">
+              <Text className="text-xl font-semibold mb-4 text-center">Thêm Lịch</Text>
               <View className="space-y-3">
                 <View>
-                  <Text className="text-xs font-semibold mb-1">Ngày giờ</Text>
+                  <Text className="text-base font-semibold mb-1">Ngày giờ</Text>
                   <TouchableOpacity
                     className="w-full border border-gray-300 rounded-md px-3 py-2"
                     onPress={() => {
@@ -220,7 +220,7 @@ const Calendar = () => {
                       }
                     }}
                   >
-                    <Text className="text-sm text-gray-800">
+                    <Text className="text-base text-gray-800">
                       {formData.dateTime
                         ? new Date(formData.dateTime).toLocaleString()
                         : 'Chọn ngày và giờ'}
@@ -262,18 +262,18 @@ const Calendar = () => {
                   )}
                 </View>
                 <View>
-                  <Text className="text-xs font-semibold mb-1">Tiêu đề</Text>
+                  <Text className="text-base font-semibold mb-1 mt-2">Tiêu đề</Text>
                   <TextInput
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-base"
                     placeholder="Nhập tiêu đề"
                     value={formData.title}
                     onChangeText={(text) => setFormData({ ...formData, title: text })}
                   />
                 </View>
                 <View>
-                  <Text className="text-xs font-semibold mb-1">Link hoặc mô tả</Text>
+                  <Text className="text-base font-semibold mb-1 mt-2">Link hoặc mô tả</Text>
                   <TextInput
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-base"
                     placeholder="Nhập link Zoom hoặc mô tả"
                     value={formData.linkOrFile}
                     onChangeText={(text) => setFormData({ ...formData, linkOrFile: text })}
@@ -281,9 +281,9 @@ const Calendar = () => {
                     autoCapitalize="none"
                   />
                 </View>
-                <View className="flex items-end">
+                <View className="flex items-center mt-3">
                   <TouchableOpacity className="bg-indigo-600 px-4 py-2 rounded-md" onPress={addSession}>
-                    <Text className="text-white text-sm font-semibold">Thêm</Text>
+                    <Text className="text-white text-base font-semibold">Thêm</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -291,7 +291,7 @@ const Calendar = () => {
                   setAddSessionVisible(false);
                   collapseButton(); // Thu nút lại
                 }} >
-                <Text className="text-gray-500 text-lg">×</Text>
+                <AntDesign name="closecircleo" size={24} color="black" />
               </Pressable>
             </View>
           </View>
@@ -302,10 +302,10 @@ const Calendar = () => {
 };
 
 const SessionItem = ({ date, title, subject }) => (
-  <View>
-    <Text className="text-gray-500 text-xs mb-1">{date}</Text>
-    <Text className="font-normal text-sm mb-1">{title}</Text>
-    <Text className="text-indigo-600 text-xs">{subject}</Text>
+  <View className="border-2 mb-2 p-3 rounded-lg border-gray-200">
+    <Text className="text-gray-500 text-xl mb-1 text-center">{date}</Text>
+    <Text className="font-normal text-2xl mb-1 text-center">{title}</Text>
+    <Text className="text-indigo-600 text-xl text-center">{subject}</Text>
   </View>
 );
 

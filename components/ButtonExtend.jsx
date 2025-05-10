@@ -121,6 +121,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect } from 'react';
 import { Modal, Text, TextInput, TouchableOpacity, View, Pressable, Image, Alert } from 'react-native';
 import { icons } from '../constants';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 const ButtonExtend = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -265,23 +266,23 @@ const fetchFriendRequests = async () => {
   return (
     <>
       <TouchableOpacity onPress={() => setModalVisible(true)}>
-        <Image source={icons.friend} className="w-6 h-6 ml-2" resizeMode="contain" />
+        <Image source={icons.friend} className="w-8 h-8 mr-4" resizeMode="contain" />
       </TouchableOpacity>
 
       <Modal visible={modalVisible} transparent>
         <View className="flex-1 justify-center items-center">
           <View className="bg-white rounded-xl w-11/12 max-h-[90%] p-6 border-2 border-blue-500 shadow-sm">
-            <Text className="text-lg font-semibold mb-4 text-center">Quản Lý Bạn Bè</Text>
+            <Text className="text-3xl font-semibold mb-4 text-center">Quản Lý Bạn Bè</Text>
 
             <View className="flex-row items-center mb-4">
               <TextInput
-                className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm"
-                placeholder="Nhập email để mời"
+                className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-base"
+                placeholder="Nhập email để gửi lời mời"
                 value={input}
                 onChangeText={setInput}
               />
               <TouchableOpacity className="ml-2 bg-indigo-600 px-4 py-2 rounded-md" onPress={sendInvite}>
-                <Text className="text-white text-sm font-semibold">Gửi</Text>
+                <Text className="text-white text-base font-semibold">Gửi</Text>
               </TouchableOpacity>
             </View>
 
@@ -295,39 +296,41 @@ const fetchFriendRequests = async () => {
               </View>
             )}
 
-            <Text className="font-semibold text-sm mb-2">Danh Sách Bạn Bè</Text>
+            <Text className="font-semibold text-xl mb-2">Danh Sách Bạn Bè</Text>
             <View className="mb-4 space-y-2">
               {friends.length === 0 ? (
-                <Text className="text-xs text-gray-500 italic">Không có bạn bè.</Text>
+                <Text className="text-base text-gray-500 italic">Không có bạn bè.</Text>
               ) : (
                 friends.map((friend) => (
-                  <View key={friend._id} className="flex-row justify-between items-center">
+                  <View key={friend._id} className="flex-row justify-between items-center border p-3 rounded-md border-l-8 border-r-8">
                     <View className="flex-row items-center gap-2">
                       <View className="w-3 h-3 rounded-full bg-gray-400" />
-                      <Text className="text-sm font-medium">{friend.email}</Text>
+                      <Text className="text-base font-medium">{friend.username}</Text>
                     </View>
                     <TouchableOpacity onPress={() => removeFriend(friend._id)}>
-                      <Text className="text-red-500 text-xs font-semibold">Xóa</Text>
+                      <View className="text-red-500 text-xs font-semibold">
+                        <Image source={icons.del} className="w-6 h-6 mr-4" resizeMode="contain" />
+                      </View>
                     </TouchableOpacity>
                   </View>
                 ))
               )}
             </View>
 
-            <Text className="font-semibold text-sm mb-2">Lời Mời Bạn Bè</Text>
+            <Text className="font-semibold text-xl mb-2">Lời Mời Bạn Bè</Text>
             <View className="space-y-2">
               {invitations.length === 0 ? (
-                <Text className="text-xs text-gray-500 italic">Không có lời mời.</Text>
+                <Text className="text-base text-gray-500 italic">Không có lời mời.</Text>
               ) : (
                 invitations.map((inv) => (
                   <View key={inv._id} className="flex-row justify-between items-center">
                     <Text className="text-sm font-medium">{inv.sender.username || inv.sender.email}</Text>
                     <View className="flex-row gap-2">
                       <TouchableOpacity onPress={() => respondInvite(inv, 'accepted')}>
-                        <Text className="text-green-600 text-xs font-semibold">Chấp nhận</Text>
+                        <Text className="text-green-600 text-base font-semibold">Chấp nhận</Text>
                       </TouchableOpacity>
                       <TouchableOpacity onPress={() => respondInvite(inv, 'rejected')}>
-                        <Text className="text-red-600 text-xs font-semibold">Từ chối</Text>
+                        <Text className="text-red-600 text-base font-semibold">Từ chối</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -337,7 +340,8 @@ const fetchFriendRequests = async () => {
 
 
             <Pressable className="absolute top-3 right-3" onPress={() => setModalVisible(false)}>
-              <Text className="text-gray-500 text-lg">×</Text>
+              {/* <Text className="text-gray-500 text-lg">×</Text> */}
+              <AntDesign name="closecircleo" size={24} color="black" />
             </Pressable>
           </View>
         </View>

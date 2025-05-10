@@ -12,6 +12,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ButtonExtend from '../../components/ButtonExtend';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const API_BASE = 'http://192.168.0.105:8017/api/v1/qa';
 const { height } = Dimensions.get('window');
@@ -71,7 +73,7 @@ const addQuestion = async () => {
   }
 
   const token = await AsyncStorage.getItem('token');
-  const userId = await AsyncStorage.getItem('userId'); // 👈 lấy userId đã lưu khi login
+  const userId = await AsyncStorage.getItem('userId'); // lấy userId đã lưu khi login
   if (!token || !userId) {
     Alert.alert('Lỗi', 'Không tìm thấy token hoặc userId. Vui lòng đăng nhập lại.');
     return;
@@ -90,7 +92,7 @@ const addQuestion = async () => {
         explanation: form.explanation,
         correctAnswerIndex: index,
         answers: form.answers.map((text) => ({ text })),
-        author: userId, // 👈 thêm dòng này
+        author: userId, 
       }),
     });
     console.log('userId', userId)
@@ -144,35 +146,35 @@ const addQuestion = async () => {
     <SafeAreaView className="bg-white h-full">
       <View className="space-y-4 mx-3 mt-2">
         <View className="flex-row justify-between items-center">
-          <Text className="font-semibold text-base flex-1 text-center ml-4">Q&A Section</Text>
+          <Text className="font-semibold text-2xl flex-1 text-center ml-7 text-gray-200">Q&A Section</Text>
           <ButtonExtend />
         </View>
-        <Text className="text-sm text-center italic">Trả lời các câu hỏi dưới đây</Text>
+        <Text className="text-xl text-center italic text-red-600">Trả lời các câu hỏi dưới đây</Text>
         <ScrollView className="space-y-3" style={{ maxHeight: height * 0.7 }}>
           {questions.map((q, index) => (
-            <View key={index} className="flex-row justify-between border border-gray-200 rounded-lg p-4 bg-white shadow-sm mt-4">
+            <View key={index} className="flex-row justify-between border-2 border-gray-200 rounded-lg p-4 bg-white shadow-sm mt-4">
               <View className="w-[65%]">
-                <Text className="font-semibold text-sm mb-1">{q.title}</Text>
-                <Text className="text-xs text-gray-400 mb-1">{q.description}</Text>
-                <View className="flex-row space-x-3">
+                <Text className="font-semibold text-xl mb-1 text-gray-200">{q.title}</Text>
+                <Text className="text-xl text-gray-500 italic mb-2">{q.description}</Text>
+                <View className="flex-row space-x-3 justify-between">
                   <TouchableOpacity
-                    className="border border-indigo-600 rounded px-3 py-1"
+                    className="border-2 border-indigo-600 rounded px-3 py-1"
                     onPress={() => {
                       setSelectedQuestion(q);
                       setModalAnswerOptionsVisible(true);
                       setSelectedAnswerIndex(null);
                     }}
                   >
-                    <Text className="text-indigo-600 text-xs font-medium">Modal chọn 4 đáp án</Text>
+                    <AntDesign name="carryout" size={24} color="green" />
                   </TouchableOpacity>
                   <TouchableOpacity
-                    className="border border-indigo-600 rounded px-3 py-1"
+                    className="border-2 border-indigo-600 rounded px-3 py-1"
                     onPress={() => {
                       setSelectedQuestion(q);
                       setModalExplanationVisible(true);
                     }}
                   >
-                    <Text className="text-indigo-600 text-xs font-medium">Modal gồm giải thích và đáp án đúng</Text>
+                    <MaterialIcons name="question-answer" size={24} color="orange" />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -191,25 +193,25 @@ const addQuestion = async () => {
 
       {/* Modal Thêm câu hỏi */}
       <Modal visible={modalVisible} transparent animationType="slide">
-        <View className="flex-1 bg-black bg-opacity-40 justify-center items-center">
-          <View className="bg-white w-11/12 max-h-[90%] rounded-lg p-6">
-            <Text className="text-lg font-semibold text-center mb-4">Add New Question</Text>
+        <View className="bg-white bg-opacity-40 justify-center items-center border-2 rounded-lg">
+          <View className="bg-white w-[300px] max-h-[80%] rounded-lg p-1">
+            <Text className="text-2xl font-semibold text-center mb-4">Thêm Câu Hỏi Mới</Text>
             <ScrollView className="space-y-3">
               {['title', 'description', 'explanation', 'correctAnswerIndex'].map((key) => (
                 <View key={key}>
-                  <Text className="text-xs font-semibold mb-1 capitalize">{key}</Text>
+                  <Text className="text-base font-semibold mb-1 capitalize">{key}</Text>
                   <TextInput
                     value={form[key]}
                     onChangeText={(text) => setForm((prev) => ({ ...prev, [key]: text }))}
                     placeholder={`Enter ${key}`}
-                    className="border border-gray-300 rounded px-3 py-2 text-sm"
+                    className="border border-gray-300 rounded px-3 py-2 text-base"
                     keyboardType={key === 'correctAnswerIndex' ? 'numeric' : 'default'}
                   />
                 </View>
               ))}
               {form.answers.map((ans, idx) => (
                 <View key={idx}>
-                  <Text className="text-xs font-semibold mb-1">Đáp án {idx + 1}</Text>
+                  <Text className="text-base font-semibold mb-1">Đáp án {idx + 1}</Text>
                   <TextInput
                     value={ans}
                     onChangeText={(text) => {
@@ -218,22 +220,22 @@ const addQuestion = async () => {
                       setForm((prev) => ({ ...prev, answers: newAnswers }));
                     }}
                     placeholder={`Nhập đáp án ${idx + 1}`}
-                    className="border border-gray-300 rounded px-3 py-2 text-sm"
+                    className="border border-gray-300 rounded px-3 py-2 text-base"
                   />
                 </View>
               ))}
-              <View className="flex-row justify-end space-x-3 mt-4">
+            </ScrollView>
+            <View className="flex-row justify-between space-x-3 mt-4">
                 <TouchableOpacity
                   className="px-4 py-2 border border-gray-300 rounded"
                   onPress={() => setModalVisible(false)}
                 >
                   <Text className="text-gray-700">Hủy</Text>
                 </TouchableOpacity>
-                <TouchableOpacity className="px-4 py-2 bg-indigo-600 rounded" onPress={addQuestion}>
+                <TouchableOpacity className="px-4 py-2 bg-orange-600 rounded" onPress={addQuestion}>
                   <Text className="text-white">Thêm Câu Hỏi</Text>
                 </TouchableOpacity>
               </View>
-            </ScrollView>
           </View>
         </View>
       </Modal>

@@ -112,11 +112,11 @@ const fetchFriendsAndInvites = async () => {
     fetchFriendsAndInvites();
   }, []);
 
-const handleJoinFriend = async (fff) => {
-    console.log(' Đang join group với ID:', fff); // Log tại đây
+const handleJoinFriend = async (friendId) => {
+    console.log(' Đang join với ID:', friendId); // Log tại đây
     try {
       const token = await getToken();
-      const res = await fetch(`http://192.168.0.105:8017/api/groups/join/${groupId}`, {
+      const res = await fetch(`http://192.168.0.105:8017/api/v1/chat/friend/${friendId}`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -142,8 +142,8 @@ const handleJoinFriend = async (fff) => {
   return (
     <SafeAreaView className="bg-white h-full">
       {/* Header */}
-      <View className="flex-row justify-between items-center mx-3">
-        <Text className="font-semibold text-base flex-1 text-center ml-4">Danh Sách Bạn Bè</Text>
+      <View className="flex-row justify-between items-center">
+        <Text className="font-semibold text-2xl flex-1 text-center ml-7 text-gray-200">Danh Sách Bạn Bè</Text>
         <ButtonExtend />
       </View>
 
@@ -154,7 +154,7 @@ const handleJoinFriend = async (fff) => {
 
       {/* Nút Tạo Nhóm */}
       <View className="mx-3 mb-3 flex flex-row justify-between">
-        <Text className="font-semibold text-base text-black mt-7 mb-4">Friend List</Text>
+        <Text className="font-semibold text-2xl text-black mt-7 mb-4">Friend List</Text>
         <Animated.View style={{ width: widthAnim }}>
           <TouchableOpacity
             onPress={handleExpand}
@@ -163,7 +163,7 @@ const handleJoinFriend = async (fff) => {
             <Image source={icons.plus} className="w-6 h-6 ml-3" resizeMode="contain" />
             <Animated.Text
               style={{ opacity: opacityAnim }}
-              className="text-white ml-2 font-semibold text-sm"
+              className="text-white ml-2 font-semibold text-base"
             >
               Đang phát triển
             </Animated.Text>
@@ -177,12 +177,12 @@ const handleJoinFriend = async (fff) => {
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleJoinFriend()}>
-            <View className="flex-row items-center space-x-4 mb-4 mx-3">
+            <View className="flex-row items-center space-x-4 mb-4 mx-3 border-2 border-gray-200 p-4 rounded-lg bg-blue-200">
               <Image
                 source={{ uri: item.avatar ? item.avatar : icon.defaultAvatar}}
-                className="w-12 h-12 rounded-full"
+                className="w-14 h-14 rounded-full"
               />
-              <Text className="text-base font-semibold text-black">
+              <Text className="ml-6 text-xl font-semibold text-gray-200">
                 {item.username}
               </Text>
             </View>
@@ -191,7 +191,7 @@ const handleJoinFriend = async (fff) => {
         contentContainerStyle={{ paddingTop: 8 }}
         ListEmptyComponent={
           !loading && (
-            <Text className="text-center text-gray-500 mt-4">
+            <Text className="text-center text-gray-500 mt-4 italic text-xl">
               Không có bạn bè nào.
             </Text>
           )

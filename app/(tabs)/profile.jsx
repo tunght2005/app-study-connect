@@ -67,7 +67,7 @@ const Profile = () => {
       <View className="space-y-4 mx-3 mt-2">
         {/* Header */}
         <View className="flex-row justify-between items-center">
-          <Text className="font-semibold text-base flex-1 text-center ml-4">Settings</Text>
+          <Text className="font-semibold text-2xl flex-1 text-center ml-7 text-gray-200">Settings</Text>
           <ButtonExtend/>
         </View>
 
@@ -80,27 +80,27 @@ const Profile = () => {
             />
           </TouchableOpacity>
           <View className="flex-1">
-            <Text className="font-semibold text-base text-black">{name}</Text>
-            <Text className="text-sm text-gray-500">{email}</Text>
+            <Text className="font-semibold text-xl text-orange-500">{name}</Text>
+            <Text className="text-lg text-gray-500">{email}</Text>
           </View>
           <Image source={icons.pen} className="max-w-[20px] max-h-[25px] mr-2" resizeMode="contain"/>
         </View>
 
         {/* Inputs */}
         <View className="px-4 space-y-4">
-          <View className="flex-row items-center border border-gray-300 rounded-md px-3 py-2">
+          <View className="flex-row items-center border border-gray-300 rounded-md px-3 py-2 my-2 border-x-8">
             <Image source={icons.pen} className="max-w-[20px] max-h-[25px] mr-2" resizeMode="contain"/> 
             <TextInput
-              className="flex-1 text-sm text-black"
+              className="flex-1 text-xl text-black border-l ml-2 pl-3"
               placeholder="John K."
               value={name}
               onChangeText={setName}
             />
           </View>
-          <View className="flex-row items-center border border-gray-300 rounded-md px-3 py-2">
+          <View className="flex-row items-center border border-gray-300 rounded-md px-3 py-2 my-2 border-x-8">
             <Image source={icons.pen} className="max-w-[20px] max-h-[25px] mr-2" resizeMode="contain"/>
             <TextInput
-              className="flex-1 text-sm text-black"
+              className="flex-1 text-xl text-black border-l ml-2 pl-3"
               placeholder="johnk@gmail.com"
               value={email}
               onChangeText={setEmail}
@@ -132,9 +132,9 @@ const Profile = () => {
                   Alert.alert('Lỗi', err.message);
                 }
               }}
-              className="mt-4 bg-blue-600 py-3 rounded-md w-[130px]"
+              className="mt-4 bg-orange-600 py-3 rounded-lg w-[130px] active:bg-gray-500"
             >
-              <Text className="text-white text-center font-semibold text-base ">Lưu Thông Tin</Text>
+              <Text className="text-black text-center font-semibold text-base ">Lưu Thông Tin</Text>
           </TouchableOpacity>
           {/* Toggles */}
           <View className="flex-row justify-between items-center">
