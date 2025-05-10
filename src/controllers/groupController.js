@@ -54,9 +54,9 @@ const getGroupById = async (req, res) => {
   // console.log('run')
 
   try {
-    const group = await Group.findOne({createdBy: req.params.id})
-      // .populate('members', 'username email')
-      // .populate('createdBy', 'username email') // Lấy thông tin nhóm trưởng
+    const group = await Group.findOne({ createdBy: req.params.id })
+    // .populate('members', 'username email')
+    // .populate('createdBy', 'username email') // Lấy thông tin nhóm trưởng
     // console.log('run')
     if (!group) {
       return res.status(404).json({ message: 'Nhóm không tồn tại' })
@@ -136,7 +136,7 @@ const deleteGroup = async (req, res) => {
     }
 
     if (userId !== group.createdBy.toString()) {
-      return res.status(403).json({ message: 'Chỉ nhóm trưởng mới có quyền xóa nhóm' });
+      return res.status(403).json({ message: 'Chỉ nhóm trưởng mới có quyền xóa nhóm' })
     }
 
     await Group.findByIdAndDelete(req.params.id)
@@ -171,21 +171,21 @@ const addMemberToGroup = async (req, res) => {
     // Kiểm tra nếu thành viên được mời có mối quan hệ bạn bè với ít nhất một thành viên trong nhóm
     const isFriendWithAnyMember = group.members.some(member =>
       member.friends && member.friends.includes(memberId)
-    );
+    )
 
     if (!isFriendWithAnyMember) {
-      return res.status(400).json({ message: 'Thành viên được mời không có mối quan hệ bạn bè với bất kỳ thành viên nào trong nhóm' });
+      return res.status(400).json({ message: 'Thành viên được mời không có mối quan hệ bạn bè với bất kỳ thành viên nào trong nhóm' })
     }
 
     // Thêm thành viên vào nhóm
     group.members = [...new Set([...group.members.map(m => m._id.toString()), memberId])] // Loại bỏ trùng lặp
     await group.save()
 
-    res.status(200).json({ message: 'Thêm thành viên thành công', group });
+    res.status(200).json({ message: 'Thêm thành viên thành công', group })
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi server', error: error.message });
+    res.status(500).json({ message: 'Lỗi server', error: error.message })
   }
-};
+}
 
 
 const removeMemberFromGroup = async (req, res) => {
@@ -224,29 +224,29 @@ const removeMemberFromGroup = async (req, res) => {
 }
 export const joinGroup = async (req, res) => {
   try {
-    const groupId = req.params.groupId; // Lấy từ URL
-    const userId = req.user.id;
+    const groupId = req.params.groupId // Lấy từ URL
+    const userId = req.user.id
 
-    const group = await Group.findById(groupId);
+    const group = await Group.findById(groupId)
     if (!group) {
-      return res.status(404).json({ message: 'Nhóm không tồn tại' });
+      return res.status(404).json({ message: 'Nhóm không tồn tại' })
     }
 
     if (group.members.includes(userId)) {
       return res.status(200).json({
         message: 'Bạn đã là thành viên của nhóm. Chuyển hướng đến chat.',
         group
-      });
+      })
     }
 
-    group.members.push(userId);
-    await group.save();
+    group.members.push(userId)
+    await group.save()
 
-    res.status(200).json({ message: 'Tham gia nhóm thành công', group });
+    res.status(200).json({ message: 'Tham gia nhóm thành công', group })
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi server', error: error.message });
+    res.status(500).json({ message: 'Lỗi server', error: error.message })
   }
-};
+}
 
 export default {
   createGroup,

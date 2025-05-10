@@ -1,6 +1,6 @@
 import express from 'express'
 import groupRoutes from './routes/v1/groupRoutes'
-import connectDB from '~/configs/mongodb.js' // thêm dòng này
+import connectDB from '~/configs/mongodb.js'
 import authRoutes from '~/routes/v1/authRoutes.js'
 import userRoutes from '~/routes/v1/userRoutes.js'
 import scheduleRoutes from '~/routes/v1/scheduleRoutes.js'
@@ -11,42 +11,28 @@ import chatRoutes from '~/routes/v1/chatRoutes.js'
 import dotenv from 'dotenv'
 import testRoutes from '~/routes/v1/testRoutes.js'
 import q_aRoutes from '~/routes/v1/q_aRoutes.js'
-dotenv.config()
 
+dotenv.config()
 
 const app = express()
 app.use(express.json())
-app.use(express.urlencoded({ extended: true })) // << THÊM DÒNG NÀY nếu chưa có
+app.use(express.urlencoded({ extended: true }))
+
 const server = http.createServer(app)
 const io = new Server(server, {
   cors: {
-    origin: '*'
+    origin: '*' // Adjust for production
   }
 })
 
-initSocket(io)
+app.set('io', io) // Make io accessible in controllers
+initSocket(io) // Initialize Socket.IO events
 
-io.on('connection', (socket) => {
-  console.log('Người dùng đã kết nối:', socket.id);
-
-  socket.on('chat message', (msg) => {
-    console.log('Tin nhắn nhận:', msg);
-    io.emit('chat message', msg); // Gửi lại cho tất cả client
-  });
-
-  socket.on('disconnect', () => {
-    console.log('Người dùng đã ngắt kết nối');
-  });
-});
-
-app.set('io', io) // Đặt socket.io vào app để sử dụng trong các route khác
-
-const hostname = '0.0.0.0' // Cho phép mọi IP trong mạng LAN kết nối
+const hostname = '0.0.0.0'
 const port = process.env.PORT || 8017
 
-// Kết nối Database trước
+// Connect to MongoDB
 connectDB()
-
 
 app.use('/api/auth', authRoutes)
 app.use('/api/v1/chat', chatRoutes)
@@ -57,7 +43,6 @@ app.use('/api/users', userRoutes)
 app.use('/uploads', express.static('uploads'))
 app.use('/api/v1/schedule', scheduleRoutes)
 
-app.listen(port, hostname, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Server run http://${hostname}:${port}/`)
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`)
 })

@@ -1,36 +1,50 @@
-// import { handleSocketMessage } from '../controllers/messageController.js';
+// sockets/socket.js
+import Message from '../models/messageModel.js'
+import Group from '../models/groupModel.js'
 
-// export default function setupSocket(io) {
-//   io.on('connection', (socket) => {
-//     console.log(`Socket ${socket.id} connected`);
-
-//     socket.on('join-room', (groupId) => {
-//       socket.join(groupId);
-//       console.log(`Socket ${socket.id} joined group ${groupId}`);
-//     });
-
-//     handleSocketMessage(io, socket);
-
-//     socket.on('disconnect', () => {
-//       console.log(`Socket ${socket.id} disconnected`);
-//     });
-//   });
-// }
 export const initSocket = (io) => {
   io.on('connection', (socket) => {
-    // eslint-disable-next-line no-console
-    console.log('Socket connected:', socket.id)
+    console.log('Người dùng đã kết nối:', socket.id)
 
-    socket.on('disconnect', () => {
-      // eslint-disable-next-line no-console
-      console.log('Socket disconnected:', socket.id)
+    // Join group room
+    socket.on('joinGroup', ({ groupId, userId }) => {
+      socket.join(groupId)
+      console.log(`User ${userId} joined group ${groupId}`)
+      // Notify group members update
+      io.to(groupId).emit('updateGroupMembers', groupId)
     })
 
-    // Thêm các event khác ở đây
-    socket.on('send_message', (data) => {
-      // eslint-disable-next-line no-console
-      console.log('Message:', data)
-      io.emit('receive_message', data) // gửi tới tất cả
+    // Handle new group message
+    socket.on('sendGroupMessage', async ({ groupId, sender, content, imageUrl }) => {
+      try {
+        const message = await Message.create({
+          sender,
+          groupId,
+          content,
+          imageUrl,
+          timestamp: new Date()
+        })
+        const populatedMessage = await Message.findById(message._id).populate('sender', 'username avatar')
+        io.to(groupId).emit('newGroupMessage', populatedMessage)
+      } catch (error) {
+        console.error('Error sending group message:', error)
+      }
+    })
+
+    // Handle group member updates
+    socket.on('requestGroupMembers', async (groupId) => {
+      try {
+        const group = await Group.findById(groupId).populate('members', 'username avatar')
+        if (group) {
+          io.to(groupId).emit('groupMembersUpdated', group.members)
+        }
+      } catch (error) {
+        console.error('Error fetching group members:', error)
+      }
+    })
+
+    socket.on('disconnect', () => {
+      console.log('Người dùng đã ngắt kết nối:', socket.id)
     })
   })
 }

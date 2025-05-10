@@ -30,6 +30,6 @@ router.patch('/:id/status', authenticateToken, authorizeRoles('admin'), groupCon
 router.delete('/:id', authenticateToken, groupController.deleteGroup)
 
 // Tham gia nhóm hoặc chuyển hướng đến chat nếu đã là thành viên
-router.post('/join/:groupId', authenticateToken, groupController.joinGroup);
+router.post('/join/:groupId', authenticateToken, groupController.joinGroup)
 
 export default router
