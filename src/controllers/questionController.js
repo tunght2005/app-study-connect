@@ -3,30 +3,29 @@ import Question from '~/models/questionModel.js'
 export const createQuestion = async (req, res) => {
   try {
     const {
-      questionId, image, title, description, answers, correctAnswerIndex, explanation
+      // eslint-disable-next-line no-unused-vars
+      title, description, answers, correctAnswerIndex, explanation
     } = req.body
 
     // Kiểm tra dữ liệu đầu vào
     // eslint-disable-next-line no-console
     console.log('Request body:', req.body)
 
-    if (!answers || answers.length !== 4) {
-      // eslint-disable-next-line no-console
-      console.log('Invalid answers:', answers) // In ra giá trị của answers
-      return res.status(400).json({ message: 'Phải có đúng 4 đáp án.' })
-    }
+    // if (!answers || answers.length !== 4) {
+    //   // eslint-disable-next-line no-console
+    //   console.log('Invalid answers:', answers) // In ra giá trị của answers
+    //   return res.status(400).json({ message: 'Phải có đúng 4 đáp án.' })
+    // }
 
     // Kiểm tra giá trị của req.user.id (nếu có)
     // eslint-disable-next-line no-console
-    console.log('User ID:', req.user ? req.user.id : 'No user info')
-
+    console.log('User ID:', req.user ? req.user._id : 'No user info')
+    // eslint-disable-next-line no-unused-vars
     // Tạo câu hỏi mới
     const newQuestion = new Question({
-      questionId,
-      image,
       title,
       description,
-      author: req.user.id, // nếu dùng middleware xác thực
+      author: req.user._id, // nếu dùng middleware xác thực
       answers,
       correctAnswerIndex,
       explanation

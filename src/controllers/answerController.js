@@ -1,33 +1,40 @@
-// answerController.js
 import Answer from '~/models/answerModel.js'
 import Question from '~/models/questionModel.js'
 
 export const submitAnswer = async (req, res) => {
   try {
-    const { questionId, selectedAnswerIndex } = req.body // Nhận ID câu hỏi và chỉ số đáp án được chọn
-    const userId = req.user._id // Lấy ID người dùng từ middleware xác thực
+    const { questionId, selectedAnswerIndex } = req.body
+    const userId = req.user._id // từ middleware authenticate
 
-    // Tìm câu hỏi trong cơ sở dữ liệu
+    // Tìm câu hỏi
     const question = await Question.findById(questionId)
     if (!question) {
       return res.status(404).json({ message: 'Không tìm thấy câu hỏi.' })
     }
 
-    // Kiểm tra xem đáp án người dùng chọn có đúng không
+    // Kiểm tra đáp án đúng/sai
     const isCorrect = selectedAnswerIndex === question.correctAnswerIndex
 
-    // Lưu câu trả lời vào cơ sở dữ liệu
+    // Tạo câu trả lời mới
     const newAnswer = new Answer({
-      question: questionId,
+      question: req.body.questionId,
       author: userId,
       selectedAnswerIndex,
-      isCorrect,
-      explanation: isCorrect ? question.explanation : 'Câu trả lời sai, không có giải thích.'
+      isCorrect
     })
 
+    // Lưu vào cơ sở dữ liệu
     const savedAnswer = await newAnswer.save()
-    res.status(201).json(savedAnswer) // Trả về câu trả lời đã lưu
+
+    // Phản hồi kết quả
+    res.status(201).json({
+      message: 'Gửi câu trả lời thành công.',
+      isCorrect,
+      correctAnswerIndex: question.correctAnswerIndex,
+      explanation: question.explanation,
+      answer: savedAnswer
+    })
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message: 'Lỗi máy chủ: ' + error.message })
   }
 }

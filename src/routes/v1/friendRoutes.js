@@ -65,10 +65,13 @@ router.post('/reject', async (req, res) => {
 
 // Lấy danh sách bạn bè của một user
 router.get('/friends/allfriend', async (req, res) => {
-  const { userId } = req.user.userId
+  const { userId } = req.body
+  // eslint-disable-next-line no-console
+  console.log('User ID', userId)
   const friends = await Friend.find({
     $or: [{ user1: userId }, { user2: userId }]
-  }).populate('user1 user2', 'username email')
+  })
+    .populate('user1 user2', 'username email')
 
   const result = friends.map(f => {
     const friend = f.user1._id.toString() === userId ? f.user2 : f.user1

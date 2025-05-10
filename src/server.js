@@ -6,11 +6,11 @@ import dotenv from 'dotenv'
 import scheduleRoutes from '~/routes/v1/scheduleRoutes.js'
 import http from 'http'
 import { Server } from 'socket.io'
-import { initSocket } from '~/sockets/index.js'
+// import { initSocket } from '~/sockets/index.js'
 import friendRoutes from '~/routes/v1/friendRoutes.js'
 import chatRoutes from '~/routes/v1/chatRoutes.js'
 import questionRoutes from '~/routes/v1/questionRoutes.js'
-// import answerRoutes from '~/routes/v1/answerRoutes.js'
+import answerRoutes from '~/routes/v1/answerRoutes.js'
 
 
 dotenv.config()
@@ -21,14 +21,19 @@ app.use(express.json())
 const server = http.createServer(app)
 const io = new Server(server, {
   cors: {
-    origin: '*'
+    origin: '*',
+    methods: ['GET', 'POST']
   }
 })
 
-initSocket(io)
+// initSocket(io)
 
 
 app.set('io', io) // Đặt socket.io vào app để sử dụng trong các route khác
+io.on('connection', (socket) => {
+  // eslint-disable-next-line no-console
+  console.log('một client đã kết nối:', socket.id)
+})
 const hostname = 'localhost'
 const port = 8017
 
@@ -55,7 +60,7 @@ app.use('/api/v1/schedule', scheduleRoutes)
 app.use('/api/v1/friend', friendRoutes)
 app.use('/api/v1/chat', chatRoutes)
 app.use('/api/v1/question', questionRoutes)
-// app.use('/api/v1/answer', answerRoutes)
+app.use('/api/v1/answer', answerRoutes)
 app.use('/uploads', express.static('uploads'))
 
 server.listen(port, hostname, () => {

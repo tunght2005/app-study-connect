@@ -4,7 +4,7 @@ import Message from '~/models/messageModel.js'
 const router = express.Router()
 
 // POST: Gửi tin nhắn
-router.post('/', async (req, res) => {
+router.post('/post', async (req, res) => {
   try {
     const { sender, recipient, content, conversationId, groupId } = req.body
 
@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
 })
 
 // GET: Lấy tin nhắn giữa hai user
-router.get('/', async (req, res) => {
+router.get('/get', async (req, res) => {
   try {
     const { user1, user2 } = req.query
     const messages = await Message.find({
