@@ -179,8 +179,8 @@ const GroupsApp = () => {
       if (res.ok) {
         // Alert.alert('Thông báo', 'Tham gia nhóm thành công!');
         router.push({
-          pathname: "/(chat)/[id].jsx",
-          // pathname: "/(chat)/demo.jsx",
+          // pathname: "/(chat)/[id].jsx",
+          pathname: "/(chat)/friend[id].jsx",
           params: { groupId },
         });
       } else {

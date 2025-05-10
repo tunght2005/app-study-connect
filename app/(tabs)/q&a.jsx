@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_BASE = 'http://192.168.0.105:8017/api/v1/qa';
 const { height } = Dimensions.get('window');
+
 const getToken = async () => {
   try {
     const token = await AsyncStorage.getItem('token');
