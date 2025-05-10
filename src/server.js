@@ -6,15 +6,17 @@ import userRoutes from '~/routes/v1/userRoutes.js'
 import scheduleRoutes from '~/routes/v1/scheduleRoutes.js'
 import http from 'http'
 import { Server } from 'socket.io'
-import { initSocket } from '~/sockets/index.js'
-
+import { initSocket } from '~/sockets/socket.js'
+import chatRoutes from '~/routes/v1/chatRoutes.js'
 import dotenv from 'dotenv'
+import testRoutes from '~/routes/v1/testRoutes.js'
+import q_aRoutes from '~/routes/v1/q_aRoutes.js'
 dotenv.config()
 
 
 const app = express()
 app.use(express.json())
-
+app.use(express.urlencoded({ extended: true })) // << THÊM DÒNG NÀY nếu chưa có
 const server = http.createServer(app)
 const io = new Server(server, {
   cors: {
@@ -24,22 +26,18 @@ const io = new Server(server, {
 
 initSocket(io)
 
-// io.on('connection', (socket) => {
-//   console.log('Người dùng đã kết nối:', socket.id);
-
-//   socket.on('chat message', (msg) => {
-//     console.log('Tin nhắn nhận:', msg);
-//     io.emit('chat message', msg); // Gửi lại cho tất cả client
-//   });
-
-//   socket.on('disconnect', () => {
-//     console.log('Người dùng đã ngắt kết nối');
-//   });
-// });
 io.on('connection', (socket) => {
-  // eslint-disable-next-line no-console
-  console.log('một client đã kết nối:', socket.id)
-})
+  console.log('Người dùng đã kết nối:', socket.id);
+
+  socket.on('chat message', (msg) => {
+    console.log('Tin nhắn nhận:', msg);
+    io.emit('chat message', msg); // Gửi lại cho tất cả client
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Người dùng đã ngắt kết nối');
+  });
+});
 
 app.set('io', io) // Đặt socket.io vào app để sử dụng trong các route khác
 
@@ -51,8 +49,8 @@ connectDB()
 
 
 app.use('/api/auth', authRoutes)
-
-import testRoutes from '~/routes/v1/testRoutes.js'
+app.use('/api/v1/chat', chatRoutes)
+app.use('/api/v1/qa', q_aRoutes)
 app.use('/api', testRoutes)
 app.use('/api/groups', groupRoutes)
 app.use('/api/users', userRoutes)
