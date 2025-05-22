@@ -22,7 +22,7 @@ const API_BASE = 'http://192.168.0.105:8017';
 const DEFAULT_AVATAR = 'https://storage.googleapis.com/a1aa/image/965786fe-1586-40e3-2b4d-a49bdb7ea933.jpg';
 
 const ChatScreen = () => {
-  const { groupId } = useLocalSearchParams();
+  const { groupId, groupName } = useLocalSearchParams();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [groupMembers, setGroupMembers] = useState([]);
@@ -73,7 +73,6 @@ const ChatScreen = () => {
       });
     });
 
-    // Listen for group member updates
     newSocket.on('groupMembersUpdated', (members) => {
       const formattedMembers = members.map((member) => {
         console.log(`Member ID: ${member._id}, Username: ${member.username}, Avatar: ${member.avatar || 'none'}`);
@@ -266,7 +265,7 @@ const ChatScreen = () => {
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
-        <Text className="font-semibold text-base flex-1 text-center ml-4">Chat Nhóm</Text>
+        <Text className="font-semibold text-xl flex-1 text-center ml-4">{groupName || "Chat Nhóm"}</Text>
         <ButtonExtend />
       </View>
 

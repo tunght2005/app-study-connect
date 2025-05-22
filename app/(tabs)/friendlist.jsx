@@ -1,36 +1,24 @@
-import { Alert, Animated } from 'react-native'; // nằm ở đầu file
-import { useRef, useEffect } from 'react';
-import { useRouter } from "expo-router";
-
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  Modal,
-  FlatList,
-} from 'react-native';
-
-import { icons } from '../../constants';
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Alert, Animated } from 'react-native';
+import { useRef, useEffect, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { View, Text, TouchableOpacity, Image, Modal, FlatList } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import SearchInput from '../../components/SearchInput';
 import ButtonExtend from '../../components/ButtonExtend';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { icons } from '../../constants';
 
 const icon = {
   defaultAvatar: 'https://cdn11.dienmaycholon.vn/filewebdmclnew/public/userupload/files/Image%20FP_2024/hinh-anime-2.jpg',
-  // Các icon khác nếu cần
 };
+
 const FriendList = () => {
   const router = useRouter();
-
   const [expanded, setExpanded] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [friends, setFriends] = useState([]);
-  const [invitations, setInvitations] = useState([]);
-
+  const [isJoining, setIsJoining] = useState(false); // Ngăn request trùng lặp
   const widthAnim = useRef(new Animated.Value(44)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
@@ -68,91 +56,150 @@ const FriendList = () => {
     ]).start(() => setExpanded(false));
   };
 
-const getToken = async () => {
-  try {
-    const token = await AsyncStorage.getItem('token');
-    console.log('✅ Token từ AsyncStorage:', token);
-    return token;
-  } catch (e) {
-    console.error('❌ Lỗi khi lấy token:', e);
-    return null;
-  }
-};
-
-const fetchFriendsAndInvites = async () => {
-  const token = await getToken();
-  if (!token) return;
-
-  try {
-    const res = await fetch('http://192.168.0.105:8017/api/users/friends', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    const data = await res.json();
-    console.log('📥 Phản hồi từ API /friends:', data);
-
-    if (res.ok) {
-      const filteredFriends = (data.friends || []);
-
-      console.log('✅ Danh sách bạn bè:', filteredFriends);
-
-      setFriends(filteredFriends);
-    } else {
-      console.error('❌ Lỗi API:', data.message);
-      Alert.alert('Lỗi', data.message || 'Không thể tải danh sách bạn bè.');
+  const getToken = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      console.log('✅ Token từ AsyncStorage:', token);
+      return token;
+    } catch (e) {
+      console.error('❌ Lỗi khi lấy token:', e);
+      return null;
     }
-  } catch (err) {
-    console.error('❌ Lỗi khi fetch danh sách bạn bè:', err);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
+
+  const fetchFriendsAndInvites = async () => {
+    const token = await getToken();
+    if (!token) {
+      Alert.alert('Lỗi', 'Không tìm thấy token. Vui lòng đăng nhập lại.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch('http://192.168.0.105:8017/api/users/friends', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log('Mã trạng thái (friends):', res.status);
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await res.text();
+        console.error('Phản hồi không phải JSON:', text);
+        Alert.alert('Lỗi', 'Server trả về dữ liệu không hợp lệ.');
+        setLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+      console.log('📥 Phản hồi từ API /friends:', data);
+
+      if (res.ok) {
+        const filteredFriends = data.friends || [];
+        console.log('✅ Danh sách bạn bè:', filteredFriends);
+        setFriends(filteredFriends);
+      } else {
+        console.error('❌ Lỗi API:', data.message);
+        Alert.alert('Lỗi', data.message || 'Không thể tải danh sách bạn bè.');
+      }
+    } catch (err) {
+      console.error('❌ Lỗi khi fetch danh sách bạn bè:', err);
+      Alert.alert('Lỗi', 'Đã có lỗi xảy ra khi tải danh sách bạn bè.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleJoinFriend = async (friendId) => {
+    if (isJoining) return; // Ngăn request trùng lặp
+    setIsJoining(true);
+
+    console.log('Đang join với ID:', friendId);
+    if (!friendId) {
+      Alert.alert('Lỗi', 'ID bạn bè không hợp lệ.');
+      setIsJoining(false);
+      return;
+    }
+
+    try {
+      const token = await getToken();
+      if (!token) {
+        Alert.alert('Lỗi', 'Không tìm thấy token. Vui lòng đăng nhập lại.');
+        setIsJoining(false);
+        return;
+      }
+
+      const userId = await AsyncStorage.getItem('userId');
+      if (!userId) {
+        Alert.alert('Lỗi', 'Không tìm thấy ID người dùng.');
+        setIsJoining(false);
+        return;
+      }
+
+      const res = await fetch(`http://192.168.0.105:8017/api/v1/chat/friend`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sender: userId,
+          recipient: friendId,
+          content: '',
+        }),
+      });
+
+      console.log('Mã trạng thái (join):', res.status);
+      console.log('Header:', res.headers);
+
+      if (res.status === 404) {
+        Alert.alert('Lỗi', 'API không tồn tại. Vui lòng kiểm tra server.');
+        setIsJoining(false);
+        return;
+      }
+
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await res.text();
+        console.error('Phản hồi không phải JSON:', text);
+        Alert.alert('Lỗi', `Server trả về dữ liệu không hợp lệ: ${text.slice(0, 200)}`);
+        setIsJoining(false);
+        return;
+      }
+
+      const data = await res.json();
+      console.log('Phản hồi từ server:', data);
+
+      if (res.ok) {
+        router.push({
+          pathname: '/(friend)/[id]',
+          params: { friendId },
+        });
+      } else {
+        Alert.alert('Lỗi', data.message || 'Không thể tham gia nhóm.');
+      }
+    } catch (e) {
+      console.error('Lỗi trong handleJoinFriend:', e);
+      Alert.alert('Lỗi', 'Đã có lỗi xảy ra khi tham gia nhóm.');
+    } finally {
+      setIsJoining(false);
+    }
+  };
 
   useEffect(() => {
     fetchFriendsAndInvites();
   }, []);
 
-const handleJoinFriend = async (friendId) => {
-    console.log(' Đang join với ID:', friendId); // Log tại đây
-    try {
-      const token = await getToken();
-      const res = await fetch(`http://192.168.0.105:8017/api/v1/chat/friend/${friendId}`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        // body: JSON.stringify({}), // Hoặc { userId } nếu cần
-      });
-      const data = await res.json();
-      console.log('Toàn bộ response từ backend:', data);
-      if (res.ok) {
-        // Alert.alert('Thông báo', 'Tham gia nhóm thành công!');
-        router.push({
-          pathname: "/(chat)/friend[id].jsx",
-          // pathname: "/(chat)/demo.jsx",
-          params: { groupId },
-        });
-      } else {
-        Alert.alert('Lỗi', data.message || 'Không thể tham gia nhóm');
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
   return (
     <SafeAreaView className="bg-white h-full">
-      {/* Header */}
       <View className="flex-row justify-between items-center">
         <Text className="font-semibold text-2xl flex-1 text-center ml-7 text-gray-200">Danh Sách Bạn Bè</Text>
         <ButtonExtend />
       </View>
 
-      {/* Search */}
       <View className="relative mx-3">
         <SearchInput />
       </View>
 
-      {/* Nút Tạo Nhóm */}
       <View className="mx-3 mb-3 flex flex-row justify-between">
         <Text className="font-semibold text-2xl text-black mt-7 mb-4">Friend List</Text>
         <Animated.View style={{ width: widthAnim }}>
@@ -171,22 +218,25 @@ const handleJoinFriend = async (friendId) => {
         </Animated.View>
       </View>
 
-      {/* Danh sách bạn bè */}
       <FlatList
         data={friends}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleJoinFriend()}>
+          <TouchableOpacity
+            onPress={() => handleJoinFriend(item._id)}
+            disabled={isJoining} // Vô hiệu hóa khi đang gửi request
+          >
             <View className="flex-row items-center space-x-4 mb-4 mx-3 border-2 border-gray-200 p-4 rounded-lg bg-blue-200">
               <Image
-                source={{ uri: item.avatar ? item.avatar : icon.defaultAvatar}}
+                source={{ uri: item.avatar || icon.defaultAvatar }}
                 className="w-14 h-14 rounded-full"
               />
               <Text className="ml-6 text-xl font-semibold text-gray-200">
                 {item.username}
               </Text>
+              {isJoining && <Text className="ml-2 text-gray-500">Đang tải...</Text>}
             </View>
-        </TouchableOpacity>      
+          </TouchableOpacity>
         )}
         contentContainerStyle={{ paddingTop: 8 }}
         ListEmptyComponent={
@@ -198,8 +248,6 @@ const handleJoinFriend = async (friendId) => {
         }
       />
 
-
-      {/* Modal phát triển */}
       <Modal visible={modalVisible} transparent animationType="fade">
         <TouchableOpacity
           className="flex-1 bg-black/30 justify-center items-center"

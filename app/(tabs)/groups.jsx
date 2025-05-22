@@ -163,7 +163,7 @@ const GroupsApp = () => {
   };
   
 
-  const handleJoinGroup = async (groupId) => {
+  const handleJoinGroup = async (groupId, groupName) => {
     console.log(' Đang join group với ID:', groupId); // Log tại đây
     try {
       const token = await getToken();
@@ -180,8 +180,8 @@ const GroupsApp = () => {
         // Alert.alert('Thông báo', 'Tham gia nhóm thành công!');
         router.push({
           // pathname: "/(chat)/[id].jsx",
-          pathname: "/(chat)/friend[id].jsx",
-          params: { groupId },
+          pathname: "/(chat)/[id]",
+          params: { groupId, groupName },
         });
       } else {
         Alert.alert('Lỗi', data.message || 'Không thể tham gia nhóm');
@@ -275,7 +275,7 @@ const GroupsApp = () => {
               <Text className="font-semibold text-xl text-black">{group.name}</Text>
               <Text className="text-xs text-gray-400">{group.status || 'Chưa rõ trạng thái'}</Text>
               <View className="flex flex-row gap-5 justify-center items-center w-full">
-                <TouchableOpacity onPress={() => handleJoinGroup(group._id)} className="mt-1 w-14 border-2 border-indigo-300 rounded-md py-1 px-2 active:bg-orange-500">
+                <TouchableOpacity onPress={() => handleJoinGroup(group._id, group.name)} className="mt-1 w-14 border-2 border-indigo-300 rounded-md py-1 px-2 active:bg-orange-500">
                   <Text className="text-indigo-600 text-base font-medium text-center">Join</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => handleInviteMember(group._id, 'userId')} className="mt-1 w-17 border-2 border-blue-300 rounded-md py-1 px-2  active:bg-orange-500">
