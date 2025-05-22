@@ -25,24 +25,51 @@ export const sendMessageToFriend = async (req, res) => {
   }
 }
 
+// export const getFriendMessages = async (req, res) => {
+//   try {
+//     const { friendId } = req.params
+//     const { userId } = req.query
+//     if (!await areFriends(userId, friendId)) {
+//       return res.status(403).json({ success: false, message: 'Not friends' })
+//     }
+//     const messages = await Message.find({
+//       $or: [
+//         { sender: userId, recipient: friendId },
+//         { sender: friendId, recipient: userId }
+//       ]
+//     }).sort({ timestamp: -1 })
+//     res.status(200).json({ success: true, messages })
+//   } catch (err) {
+//     res.status(500).json({ success: false, message: err.message })
+//   }
+// }
 export const getFriendMessages = async (req, res) => {
   try {
-    const { friendId } = req.params
-    const { userId } = req.query
+    const { friendId } = req.params;
+    const { userId } = req.query;
+    console.log('Nhận request GET /api/v1/chat/friend:', { friendId, userId });
+
     if (!await areFriends(userId, friendId)) {
-      return res.status(403).json({ success: false, message: 'Not friends' })
+      return res.status(403).json({ success: false, message: 'Not friends' });
     }
+
     const messages = await Message.find({
       $or: [
         { sender: userId, recipient: friendId },
-        { sender: friendId, recipient: userId }
-      ]
-    }).sort({ timestamp: -1 })
-    res.status(200).json({ success: true, messages })
+        { sender: friendId, recipient: userId },
+      ],
+      content: { $ne: '' }, // ❗️ Chỉ lấy tin nhắn có content khác rỗng
+    })
+      .populate('sender', 'username') // Populate sender để có username
+      .sort({ timestamp: -1 });
+
+    console.log('Tin nhắn trả về:', messages);
+    res.status(200).json({ success: true, messages });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message })
+    console.error('Lỗi lấy tin nhắn:', err);
+    res.status(500).json({ success: false, message: err.message });
   }
-}
+};
 
 export const sendMessageToGroup = async (req, res) => {
   try {
